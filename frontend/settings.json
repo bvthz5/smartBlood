@@ -1,0 +1,13 @@
+{
+  // other settings...
+  "files.associations": {
+    "*.css": "postcss"
+  },
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "html",
+    "javascript": "javascript",
+    "javascriptreact": "html",
+    "typescriptreact": "html",
+    "postcss": "css"
+  }
+}

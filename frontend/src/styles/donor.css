@@ -1,0 +1,5 @@
+/* src/styles/donor.css - basic donor pages styles */
+.form-card { max-width:520px; margin:36px auto; padding:18px; }
+.form-field { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+.form-field input, .form-field select { padding:10px 12px; border-radius:8px; border:1px solid #e5e7eb; }
+.form-actions { display:flex; gap:12px; justify-content:flex-end; }

@@ -1,0 +1,63 @@
+/* Base styles */
+body { 
+  background-color: #f9fafb; 
+  color: #1f2937; 
+}
+
+.container { 
+  max-width: 56rem; 
+  margin-left: auto; 
+  margin-right: auto; 
+  padding-left: 1rem; 
+  padding-right: 1rem; 
+}
+
+/* UI helpers */
+.card { 
+  background-color: white; 
+  border-radius: 0.5rem; 
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
+  padding: 1rem; 
+}
+
+.btn-primary { 
+  background-color: #dc2626; 
+  color: white; 
+  padding: 0.5rem 1rem; 
+  border-radius: 0.5rem; 
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
+  transition: all 0.2s ease-in-out; 
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover { 
+  background-color: #b91c1c; 
+}
+
+.btn-outline { 
+  border: 1px solid #dc2626; 
+  color: #dc2626; 
+  padding: 0.5rem 1rem; 
+  border-radius: 0.5rem; 
+  background-color: transparent;
+  transition: all 0.2s ease-in-out; 
+  cursor: pointer;
+}
+
+.btn-outline:hover { 
+  background-color: #fef2f2; 
+}
+
+/* ripple faux effect for buttons */
+.ripple-on { 
+  box-shadow: 0 6px 18px rgba(239,68,68,0.18); 
+  transform: translateY(-2px); 
+}
+
+/* small responsive tweaks */
+@media (min-width:1024px) {
+	.container { 
+    max-width: 72rem; 
+  }
+}

@@ -1,0 +1,65 @@
+.auth-card { /* keeps existing layout but provides local visual polish */
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem; /* 20px */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+/* Page-level centering wrapper */
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 100px); /* leave some room for header */
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.auth-animate {
+  animation: slideUpFade 420ms cubic-bezier(.2,.9,.25,1) both;
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.auth-card .form-row { margin-bottom: 0.6rem; }
+.auth-card input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  outline: none;
+  transition: box-shadow 180ms ease, border-color 160ms ease, transform 160ms ease;
+}
+.auth-card input:focus {
+  border-color: #d32f2f;
+  box-shadow: 0 6px 20px rgba(211,47,47,0.12);
+}
+
+.auth-card .btn {
+  display: inline-block;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.auth-card .btn:active { transform: translateY(1px); }
+.auth-card .btn--primary { background: #d32f2f; color: #fff; box-shadow: 0 8px 20px rgba(211,47,47,0.14); }
+.auth-card .btn--outline { background: transparent; border: 1px solid #d32f2f; color: #d32f2f; }
+
+.auth-card .text-muted { color: #6b7280; }
+
+.auth-card .download-buttons { display:flex; gap:8px; margin-top:8px; }
+
+.auth-card .sr-note { font-size:0.9rem; color:#374151; margin-bottom:8px }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .auth-animate, .auth-card input, .auth-card .btn { animation: none !important; transition: none !important; }
+}
