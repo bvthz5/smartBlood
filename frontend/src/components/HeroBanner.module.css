@@ -1,0 +1,420 @@
+/* HeroBanner.module.css - Full-bleed hero component styles */
+
+/* CSS Variables */
+:root {
+  --color-primary: #e63946;
+  --color-primary-dark: #d62828;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-dark: #2d3436;
+  
+  --page-padding: clamp(16px, 4vw, 48px);
+  --border-radius: 12px;
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
+  
+  --font-size-hero: clamp(24px, 5vw, 60px);
+  --font-size-subtitle: clamp(14px, 2vw, 20px);
+  --font-weight-bold: 700;
+  --font-weight-semibold: 600;
+  
+  --alerts-bar-height: 48px; /* Match actual AlertsBar height */
+}
+
+/* Fixed Full-bleed hero container */
+.hero-outer {
+  position: relative;
+  width: 100%;
+  display: block;
+  height: 100vh;
+  min-height: 600px;
+  max-height: 800px;
+  overflow: hidden;
+  margin-top: 124px; /* Fixed offset to account for header + alerts bar */
+  padding: 0;
+  /* Background image properties */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  /* Ensure image is visible */
+  background-color: #f0f0f0;
+  /* Image layer is behind navbar and alert bar */
+  z-index: 1;
+}
+
+/* Fixed Inner container */
+.hero-inner {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 12px;
+  margin: 0 auto;
+  /* Content is centered in hero section */
+  padding-top: 0;
+  /* Ensure content is above background image */
+  z-index: 10;
+}
+
+/* Background image transition effect */
+.hero-outer {
+  transition: background-image 0.8s ease-in-out;
+}
+
+/* Enhanced gradient */
+.hero-gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.3) 30%,
+    rgba(0, 0, 0, 0.4) 70%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  z-index: 2;
+  /* Add subtle animation */
+  animation: gradientShift 10s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.2) 0%,
+      rgba(0, 0, 0, 0.3) 30%,
+      rgba(0, 0, 0, 0.4) 70%,
+      rgba(0, 0, 0, 0.5) 100%
+    );
+  }
+  50% {
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.15) 0%,
+      rgba(0, 0, 0, 0.25) 30%,
+      rgba(0, 0, 0, 0.35) 70%,
+      rgba(0, 0, 0, 0.45) 100%
+    );
+  }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 15;
+  max-width: 600px;
+  color: var(--color-white);
+  padding: 2rem 1.5rem;
+  text-align: left;
+  width: 100%;
+  /* Content is above image but below navbar/alert bar */
+  margin-top: 1rem;
+  /* Ensure text is visible */
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+/* Hero title */
+.hero-title {
+  font-size: var(--font-size-hero);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.1;
+  margin-bottom: 16px;
+  color: #ffffff;
+  text-shadow: 3px 3px 12px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5);
+  letter-spacing: -0.02em;
+}
+
+/* Hero subtitle */
+.hero-subtitle {
+  font-size: var(--font-size-subtitle);
+  line-height: 1.4;
+  margin-bottom: 24px;
+  color: #f8f9fa;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7), 0 0 15px rgba(0, 0, 0, 0.4);
+  opacity: 0.95;
+  font-weight: 500;
+}
+
+/* CTA buttons container */
+.hero-ctas {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 0;
+}
+
+/* Button styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: var(--border-radius);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
+  min-height: 48px;
+  width: 180px;
+  font-size: 14px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+  box-shadow: var(--shadow-md);
+  /* Ensure button is visible */
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.btn--primary:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn--outline {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-white);
+  border-color: var(--color-white);
+  backdrop-filter: blur(10px);
+}
+
+.btn--outline:hover {
+  background: var(--color-white);
+  color: var(--color-primary);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn--large {
+  padding: 20px 40px;
+  font-size: 18px;
+}
+
+/* Carousel controls */
+.carousel-controls {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 20;
+  /* Ensure controls are visible */
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px 20px;
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+}
+
+.carousel-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--color-white);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.7;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-indicator:hover,
+.carousel-indicator.active {
+  background: var(--color-white);
+  opacity: 1;
+  transform: scale(1.2);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.carousel-indicator::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-white);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.carousel-indicator.active::before {
+  opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .hero-outer {
+    height: 80vh;
+    min-height: 500px;
+    margin-top: 124px;
+  }
+  
+  .hero-inner {
+    padding: 0 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-outer {
+    height: 70vh;
+    min-height: 450px;
+    margin-top: 124px;
+  }
+  
+  .hero-inner {
+    padding: 0 30px;
+  }
+  
+  .hero-content {
+    max-width: 100%;
+  }
+  
+  .hero-ctas {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .btn {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+  
+  .carousel-controls {
+    bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-outer {
+    height: 60vh;
+    min-height: 400px;
+    margin-top: 124px;
+  }
+  
+  .hero-inner {
+    padding: 0 16px;
+  }
+  
+  .hero-content {
+    max-width: 100%;
+    padding: 2rem 1.5rem;
+    margin-top: 1rem;
+  }
+  
+  .hero-title {
+    margin-bottom: 16px;
+    font-size: clamp(24px, 8vw, 32px);
+  }
+  
+  .hero-subtitle {
+    margin-bottom: 24px;
+    font-size: clamp(14px, 4vw, 18px);
+  }
+}
+
+/* Focus styles for accessibility */
+.btn:focus,
+.carousel-indicator:focus {
+  outline: 2px solid var(--color-white);
+  outline-offset: 2px;
+}
+
+/* Container utility class */
+.container {
+  max-width: 100%;
+  margin: 0;
+  padding: 0 var(--page-padding);
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Enhanced button hover effects */
+.btn--primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn--primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn--primary:hover::before {
+  left: 100%;
+}
+
+/* Background image transition effects */
+.hero-outer {
+  will-change: background-position;
+}
+
+/* Smooth transitions for all interactive elements */
+.btn,
+.carousel-indicator {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}

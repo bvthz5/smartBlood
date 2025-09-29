@@ -5,6 +5,18 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html,body,#root { height: 100%; }
 
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* CSS Variables for layout offsets */
+:root {
+  --header-height: 76px;
+  --alerts-height: 48px;
+  --combined-offset: 124px;
+}
+
 :root{
   --color-red: #D32F2F;
   --color-white: #FFFFFF;
@@ -12,12 +24,13 @@ html,body,#root { height: 100%; }
   --color-accent: #FFFFFF; /* use white page background to increase contrast */
   --muted: #444444;
   --container-width: 1200px;
+  --page-padding: 12px;
   --card-shadow: 0 4px 12px rgba(0,0,0,0.10);
 }
 
 /* Dark mode support */
 [data-theme="dark"] {
-  --color-red: #e63946;
+  --color-red: #ff4757;
   --color-white: #1a1a1a;
   --color-dark: #ffffff;
   --color-accent: #2d2d2d;
@@ -33,6 +46,51 @@ body {
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.45;
   transition: background-color 0.3s ease, color 0.3s ease;
+  /* No body padding - fixed elements handle their own spacing */
+  padding-top: 0;
+  margin: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Site wrapper replaces min-h-screen bg-gray-50 */
+.site-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background: #f7f8fa;
+}
+
+/* Page container replaces container mx-auto px-4 py-8 */
+.page-container {
+  max-width: 1200px;
+  margin: 132px auto;
+  padding: 0px;
+}
+
+/* Full bleed for hero/banner sections */
+.full-bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  overflow: hidden;
+}
+
+/* Error page styles */
+.error-page {
+  text-align: center;
+  padding: 64px 0;
+}
+
+.error-title {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.error-message {
+  color: #6b7280;
+  font-size: 1.125rem;
 }
 
 .container {
@@ -52,15 +110,94 @@ h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; color: var(--color-dark); f
 .text-muted { color: var(--muted); }
 
 /* Card default */
-.card { background: var(--color-white); border-radius: 10px; box-shadow: var(--card-shadow); padding: 18px; border: 1px solid rgba(33,33,33,0.06); }
+.card { 
+  background: var(--color-white); 
+  border-radius: 10px; 
+  box-shadow: var(--card-shadow); 
+  padding: 18px; 
+  border: 1px solid rgba(33,33,33,0.06); 
+  transition: all 0.3s ease;
+}
+
+/* Dark mode card styles */
+[data-theme="dark"] .card {
+  background: #2d2d2d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
 
 /* Buttons */
-.btn { display: inline-block; padding: 12px 18px; border-radius: 10px; border: none; font-weight:700; }
-.btn--primary { background: var(--color-red); color: var(--color-white); box-shadow: 0 10px 28px rgba(211,47,47,0.16); border: none; }
-.btn--primary:hover { background: #B71C1C; transform: translateY(-2px); }
-.btn--primary:active { transform: translateY(0); }
-.btn--outline { background: transparent; color: var(--color-red); border: 2px solid var(--color-red); font-weight:800; border-radius:10px }
-.btn--outline:hover { background: rgba(211,47,47,0.06); color: var(--color-white); transform: translateY(-2px); border-color: #B71C1C }
+.btn { 
+  display: inline-block; 
+  padding: 12px 18px; 
+  border-radius: 10px; 
+  border: none; 
+  font-weight: 700; 
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+  text-align: center;
+  text-decoration: none;
+}
+.btn--primary { 
+  background: var(--color-red); 
+  color: var(--color-white); 
+  box-shadow: 0 10px 28px rgba(211,47,47,0.16); 
+  border: none; 
+}
+.btn--primary:hover { 
+  background: #B71C1C; 
+  transform: translateY(-2px); 
+  box-shadow: 0 12px 32px rgba(211,47,47,0.24);
+}
+.btn--primary:active { 
+  transform: translateY(0); 
+}
+.btn--primary:focus {
+  outline: 2px solid var(--color-white);
+  outline-offset: 2px;
+}
+.btn--outline { 
+  background: transparent; 
+  color: var(--color-red); 
+  border: 2px solid var(--color-red); 
+  font-weight: 800; 
+  border-radius: 10px;
+}
+.btn--outline:hover { 
+  background: rgba(211,47,47,0.06); 
+  color: var(--color-white); 
+  transform: translateY(-2px); 
+  border-color: #B71C1C;
+}
+.btn--outline:focus {
+  outline: 2px solid var(--color-red);
+  outline-offset: 2px;
+}
+
+/* Dark mode button styles */
+[data-theme="dark"] .btn--primary {
+  background: #ff4757;
+  color: #ffffff;
+  box-shadow: 0 10px 28px rgba(255, 71, 87, 0.24);
+}
+
+[data-theme="dark"] .btn--primary:hover {
+  background: #ff3742;
+  box-shadow: 0 12px 32px rgba(255, 71, 87, 0.32);
+}
+
+[data-theme="dark"] .btn--outline {
+  color: #ff4757;
+  border-color: #ff4757;
+}
+
+[data-theme="dark"] .btn--outline:hover {
+  background: rgba(255, 71, 87, 0.1);
+  color: #ffffff;
+  border-color: #ff3742;
+}
 
 /* layout helpers */
 .row { display:flex; gap:24px; }
@@ -133,17 +270,40 @@ h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; color: var(--color-dark); f
 /* form input styles */
 input[type="text"], input[type="email"], input[type="password"], input[type="number"], select {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.25rem;
+  padding: 0.75rem;
+  border: 2px solid #d1d5db;
+  border-radius: 0.5rem;
   font-size: 1rem;
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition: all 0.3s ease;
+  background: var(--color-white);
+  color: var(--color-dark);
+  min-height: 44px;
 }
 
 input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, input[type="number"]:focus, select:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: var(--color-red);
+  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+}
+
+/* Dark mode form styles */
+[data-theme="dark"] input[type="text"], 
+[data-theme="dark"] input[type="email"], 
+[data-theme="dark"] input[type="password"], 
+[data-theme="dark"] input[type="number"], 
+[data-theme="dark"] select {
+  background: #2d2d2d;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+[data-theme="dark"] input[type="text"]:focus, 
+[data-theme="dark"] input[type="email"]:focus, 
+[data-theme="dark"] input[type="password"]:focus, 
+[data-theme="dark"] input[type="number"]:focus, 
+[data-theme="dark"] select:focus {
+  border-color: #ff4757;
+  box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.1);
 }
 
 /* responsive utilities */

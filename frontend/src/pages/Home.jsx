@@ -1,102 +1,19 @@
 // src/pages/Home.jsx
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import '../styles/home.css'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import HeroBanner from '../components/HeroBanner'
+import SectionReveal from '../components/SectionReveal'
+import AlertsBar from '../components/AlertsBar'
+import '../styles/home-new.css'
 
-// Component for Emergency Alert Bar
-function EmergencyBar({ language }) {
-  const [currentMessage, setCurrentMessage] = useState(0)
-  const emergencyMessages = language === 'en' ? [
-    "🚨 Urgent Need: O+ in Trivandrum (2 units). [Click to Help]",
-    "🚨 Emergency: A- blood needed in Kochi (1 unit). [Donate Now]",
-    "🚨 Critical: B+ platelets required in Kozhikode (3 units). [Urgent]"
-  ] : [
-    "🚨 അടിയന്തരം: തിരുവനന്തപുരത്ത് O+ രക്തം (2 യൂണിറ്റ്). [സഹായിക്കാൻ ക്ലിക്ക് ചെയ്യുക]",
-    "🚨 അടിയന്തരം: കൊച്ചിയിൽ A- രക്തം ആവശ്യം (1 യൂണിറ്റ്). [ഇപ്പോൾ രക്തം ദാനം ചെയ്യുക]",
-    "🚨 നിർണായകം: കോഴിക്കോട് B+ പ്ലേറ്റ്ലെറ്റുകൾ ആവശ്യം (3 യൂണിറ്റ്). [അടിയന്തരം]"
-  ]
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger)
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentMessage((prev) => (prev + 1) % emergencyMessages.length)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [emergencyMessages.length])
+// EmergencyBar is now handled by AlertsBar component
 
-  return (
-    <div className="emergency-bar">
-      <div className="emergency-scroll">
-        <span className="emergency-icon">🚨</span>
-        <span className="emergency-text">{emergencyMessages[currentMessage]}</span>
-      </div>
-    </div>
-  )
-}
-
-// Component for Hero Section
-function HeroSection({ language }) {
-  const [currentImage, setCurrentImage] = useState(0)
-  const images = [
-    '/api/placeholder/600/400',
-    '/api/placeholder/600/400', 
-    '/api/placeholder/600/400',
-    '/api/placeholder/600/400'
-  ]
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length)
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [images.length])
-
-  return (
-    <section className="hero">
-      <div className="hero-container">
-        <div className="hero-content">
-          <h1 className="hero-title">
-            {language === 'en' ? 'Give Blood. Save Lives.' : 'രക്തം ദാനം ചെയ്യുക. ജീവിതങ്ങൾ രക്ഷിക്കുക.'}
-          </h1>
-          <p className="hero-subtitle">
-            {language === 'en' 
-              ? "Join Kerala's real-time blood donor network." 
-              : "കേരളത്തിന്റെ റിയൽ-ടൈം രക്ത ദാനി നെറ്റ്‌വർക്കിൽ ചേരുക."}
-          </p>
-          <div className="hero-buttons">
-            <Link to="/donor/register" className="btn btn-primary">
-              {language === 'en' ? 'Become a Donor' : 'ഒരു ദാനിയായി മാറുക'}
-            </Link>
-            <Link to="/seeker/request" className="btn btn-outline">
-              {language === 'en' ? 'Find Blood (Hospitals)' : 'രക്തം കണ്ടെത്തുക (ആശുപത്രികൾ)'}
-            </Link>
-          </div>
-        </div>
-        <div className="hero-image">
-          <div className="image-carousel">
-            <img 
-              src={images[currentImage]} 
-              alt="Blood donation" 
-              className="carousel-image"
-            />
-            <div className="carousel-dots">
-              {images.map((_, index) => (
-                <button
-                  key={index}
-                  className={`carousel-dot ${index === currentImage ? 'active' : ''}`}
-                  onClick={() => setCurrentImage(index)}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="video-placeholder">
-            <div className="play-button">▶️</div>
-            <span>{language === 'en' ? 'Watch How It Works' : 'ഇത് എങ്ങനെ പ്രവർത്തിക്കുന്നു കാണുക'}</span>
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
+// Hero section is now handled by HeroBanner component
 
 // Component for Statistics
 function StatsSection({ language }) {
@@ -148,6 +65,9 @@ function StatsSection({ language }) {
 
 // Component for Why Donate Section
 function WhyDonateSection({ language }) {
+  const sectionRef = useRef(null)
+  const cardsRef = useRef([])
+  
   const reasons = language === 'en' ? [
     { title: 'Takes Only 1 Hour', description: 'Quick and safe at certified centers.' },
     { title: 'Free Health Check-up', description: 'Medical screening before donation.' },
@@ -162,15 +82,50 @@ function WhyDonateSection({ language }) {
     { title: 'ആശുപത്രികൾ ആശ്രയിക്കുന്നു', description: 'മുൻനിര മെഡിക്കൽ സെന്ററുകളുമായി പങ്കാളിത്തം.' }
   ]
 
+  useEffect(() => {
+    if (!sectionRef.current || !cardsRef.current.length) return
+
+    // Set initial state
+    gsap.set(cardsRef.current, { 
+      opacity: 0, 
+      y: 60,
+      scale: 0.9
+    })
+
+    // Create scroll trigger animation
+    ScrollTrigger.create({
+      trigger: sectionRef.current,
+      start: "top 80%",
+      onEnter: () => {
+        gsap.to(cardsRef.current, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: "power3.out"
+        })
+      }
+    })
+
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+    }
+  }, [])
+
   return (
-    <section className="why-donate-section">
+    <section ref={sectionRef} className="why-donate-section">
       <div className="container">
         <h2 className="section-title">
           {language === 'en' ? 'Why Donate?' : 'എന്തുകൊണ്ട് ദാനം ചെയ്യണം?'}
         </h2>
         <div className="reasons-grid">
           {reasons.map((reason, index) => (
-            <div key={index} className="reason-card">
+            <div 
+              key={index} 
+              ref={el => cardsRef.current[index] = el}
+              className="reason-card"
+            >
               <h3 className="reason-title">{reason.title}</h3>
               <p className="reason-description">{reason.description}</p>
             </div>
@@ -184,6 +139,10 @@ function WhyDonateSection({ language }) {
 // Component for Blood Compatibility Tool
 function CompatibilityTool({ language }) {
   const [selectedBloodGroup, setSelectedBloodGroup] = useState('O+')
+  const sectionRef = useRef(null)
+  const buttonsRef = useRef([])
+  const cardsRef = useRef([])
+  const itemsRef = useRef([])
   
   const compatibility = {
     'O+': { donors: ['O+', 'O-'], receivers: ['O+', 'A+', 'B+', 'AB+'] },
@@ -198,8 +157,60 @@ function CompatibilityTool({ language }) {
 
   const bloodGroups = Object.keys(compatibility)
 
+  useEffect(() => {
+    if (!sectionRef.current) return
+
+    // Set initial state
+    gsap.set(buttonsRef.current, { opacity: 0, y: 30 })
+    gsap.set(cardsRef.current, { opacity: 0, y: 40 })
+
+    // Create scroll trigger animation
+    ScrollTrigger.create({
+      trigger: sectionRef.current,
+      start: "top 80%",
+      onEnter: () => {
+        gsap.to(buttonsRef.current, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "power3.out"
+        })
+        
+        gsap.to(cardsRef.current, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.2,
+          ease: "power3.out",
+          delay: 0.3
+        })
+      }
+    })
+
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+    }
+  }, [])
+
+  useEffect(() => {
+    // Animate compatibility items when blood group changes
+    if (itemsRef.current.length > 0) {
+      gsap.fromTo(itemsRef.current, 
+        { opacity: 0, scale: 0.8 },
+        { 
+          opacity: 1, 
+          scale: 1, 
+          duration: 0.5, 
+          stagger: 0.1,
+          ease: "back.out(1.7)"
+        }
+      )
+    }
+  }, [selectedBloodGroup])
+
   return (
-    <section className="compatibility-section">
+    <section ref={sectionRef} className="compatibility-section">
       <div className="container">
         <h2 className="section-title">
           {language === 'en' ? 'Blood Compatibility Tool' : 'രക്ത സാമ്യത ഉപകരണം'}
@@ -210,9 +221,10 @@ function CompatibilityTool({ language }) {
               {language === 'en' ? 'Select Blood Group:' : 'രക്തഗ്രൂപ്പ് തിരഞ്ഞെടുക്കുക:'}
             </label>
             <div className="blood-group-buttons">
-              {bloodGroups.map(group => (
+              {bloodGroups.map((group, index) => (
                 <button
                   key={group}
+                  ref={el => buttonsRef.current[index] = el}
                   className={`blood-group-btn ${selectedBloodGroup === group ? 'active' : ''}`}
                   onClick={() => setSelectedBloodGroup(group)}
                 >
@@ -222,19 +234,31 @@ function CompatibilityTool({ language }) {
             </div>
           </div>
           <div className="compatibility-results">
-            <div className="compatibility-card">
+            <div ref={el => cardsRef.current[0] = el} className="compatibility-card">
               <h3>{language === 'en' ? 'Can Donate To:' : 'ദാനം ചെയ്യാൻ കഴിയുന്നവർ:'}</h3>
               <div className="compatibility-list">
-                {compatibility[selectedBloodGroup].receivers.map(group => (
-                  <span key={group} className="compatibility-item">{group}</span>
+                {compatibility[selectedBloodGroup].receivers.map((group, index) => (
+                  <span 
+                    key={group} 
+                    ref={el => itemsRef.current[index] = el}
+                    className="compatibility-item"
+                  >
+                    {group}
+                  </span>
                 ))}
               </div>
             </div>
-            <div className="compatibility-card">
+            <div ref={el => cardsRef.current[1] = el} className="compatibility-card">
               <h3>{language === 'en' ? 'Can Receive From:' : 'സ്വീകരിക്കാൻ കഴിയുന്നവർ:'}</h3>
               <div className="compatibility-list">
-                {compatibility[selectedBloodGroup].donors.map(group => (
-                  <span key={group} className="compatibility-item">{group}</span>
+                {compatibility[selectedBloodGroup].donors.map((group, index) => (
+                  <span 
+                    key={group} 
+                    ref={el => itemsRef.current[index + compatibility[selectedBloodGroup].receivers.length] = el}
+                    className="compatibility-item"
+                  >
+                    {group}
+                  </span>
                 ))}
               </div>
             </div>
@@ -420,11 +444,63 @@ function TestimonialsSection({ language }) {
 
 // Component for Download App
 function DownloadAppSection({ language }) {
+  const sectionRef = useRef(null)
+  const infoRef = useRef(null)
+  const qrRef = useRef(null)
+  const buttonsRef = useRef([])
+  const squaresRef = useRef([])
+
+  useEffect(() => {
+    if (!sectionRef.current) return
+
+    // Set initial state
+    gsap.set([infoRef.current, qrRef.current], { opacity: 0, y: 50 })
+    gsap.set(buttonsRef.current, { opacity: 0, scale: 0.8 })
+    gsap.set(squaresRef.current, { opacity: 0, scale: 0 })
+
+    // Create scroll trigger animation
+    ScrollTrigger.create({
+      trigger: sectionRef.current,
+      start: "top 80%",
+      onEnter: () => {
+        gsap.to([infoRef.current, qrRef.current], {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.2,
+          ease: "power3.out"
+        })
+
+        gsap.to(buttonsRef.current, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "back.out(1.7)",
+          delay: 0.4
+        })
+
+        gsap.to(squaresRef.current, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.4,
+          stagger: 0.05,
+          ease: "power3.out",
+          delay: 0.6
+        })
+      }
+    })
+
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+    }
+  }, [])
+
   return (
-    <section className="download-app-section">
+    <section ref={sectionRef} className="download-app-section">
       <div className="container">
         <div className="download-content">
-          <div className="download-info">
+          <div ref={infoRef} className="download-info">
             <h2>{language === 'en' ? 'Download the App' : 'ആപ്പ് ഡൗൺലോഡ് ചെയ്യുക'}</h2>
             <p>
               {language === 'en' 
@@ -432,21 +508,24 @@ function DownloadAppSection({ language }) {
                 : 'നിങ്ങളുടെ പ്രദേശത്തെ രക്ത അഭ്യർത്ഥനകൾക്കായി തൽക്ഷണ അറിയിപ്പുകൾ നേടുക.'}
             </p>
             <div className="download-buttons">
-              <button className="store-button">
-                <img src="/api/placeholder/120/40" alt="App Store" />
+              <button ref={el => buttonsRef.current[0] = el} className="store-button">
+                <img src="/applestore.png" alt="App Store" />
               </button>
-              <button className="store-button">
-                <img src="/api/placeholder/120/40" alt="Google Play" />
+              <button ref={el => buttonsRef.current[1] = el} className="store-button">
+                <img src="/playstore.png" alt="Google Play" />
               </button>
             </div>
           </div>
-          <div className="qr-code">
+          <div ref={qrRef} className="qr-code">
             <div className="qr-placeholder">
               <div className="qr-squares">
-                <div className="qr-square"></div>
-                <div className="qr-square"></div>
-                <div className="qr-square"></div>
-                <div className="qr-square"></div>
+                {Array.from({ length: 64 }, (_, index) => (
+                  <div 
+                    key={index} 
+                    ref={el => squaresRef.current[index] = el}
+                    className="qr-square"
+                  />
+                ))}
               </div>
               <span>{language === 'en' ? 'Scan to Download' : 'ഡൗൺലോഡ് ചെയ്യാൻ സ്കാൻ ചെയ്യുക'}</span>
             </div>
@@ -460,7 +539,7 @@ function DownloadAppSection({ language }) {
 // Component for About Section
 function AboutSection({ language }) {
   return (
-    <section className="about-section">
+    <section id="about" className="about-section">
       <div className="container">
         <div className="about-content">
           <div className="about-text">
@@ -504,18 +583,55 @@ export default function Home() {
     setLanguage(savedLanguage)
   }, [])
 
+  // Listen for language changes from navbar
+  useEffect(() => {
+    const handleLanguageChange = () => {
+      const savedLanguage = localStorage.getItem('language') || 'en'
+      setLanguage(savedLanguage)
+    }
+
+    window.addEventListener('languageChanged', handleLanguageChange)
+    return () => window.removeEventListener('languageChanged', handleLanguageChange)
+  }, [])
+
   return (
     <main className="home-page">
-      <EmergencyBar language={language} />
-      <HeroSection language={language} />
-      <StatsSection language={language} />
-      <WhyDonateSection language={language} />
-      <CompatibilityTool language={language} />
-      <HowItWorksSection language={language} />
-      <AlertsCampsSection language={language} />
-      <TestimonialsSection language={language} />
-      <DownloadAppSection language={language} />
-      <AboutSection language={language} />
+      <AlertsBar language={language} />
+      <div className="full-bleed">
+        <HeroBanner language={language} />
+      </div>
+      
+      <SectionReveal>
+        <StatsSection language={language} />
+      </SectionReveal>
+      
+      <SectionReveal>
+        <WhyDonateSection language={language} />
+      </SectionReveal>
+      
+      <SectionReveal>
+        <CompatibilityTool language={language} />
+      </SectionReveal>
+      
+      <SectionReveal>
+        <HowItWorksSection language={language} />
+      </SectionReveal>
+      
+      <SectionReveal>
+        <AlertsCampsSection language={language} />
+      </SectionReveal>
+      
+      <SectionReveal>
+        <TestimonialsSection language={language} />
+      </SectionReveal>
+      
+      <SectionReveal>
+        <DownloadAppSection language={language} />
+      </SectionReveal>
+      
+      <SectionReveal>
+        <AboutSection language={language} />
+      </SectionReveal>
       
       {/* Footer */}
       <footer className="footer">
