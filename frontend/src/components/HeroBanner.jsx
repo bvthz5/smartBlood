@@ -287,7 +287,7 @@ export default function HeroBanner({ language }) {
           <p
             className="hero-subtitle"
             style={{ 
-              transform: "translateX(30px)",
+              transform: "translateX(-200px)",
               fontSize: "1.2rem",
               fontWeight: "500",
               lineHeight: "1.4",
