@@ -23,7 +23,7 @@ html {
   --color-dark: #212121;
   --color-accent: #FFFFFF; /* use white page background to increase contrast */
   --muted: #444444;
-  --container-width: 1200px;
+  --container-width: 1200px; /* Kept for reference, but ignored by .container below */
   --page-padding: 12px;
   --card-shadow: 0 4px 12px rgba(0,0,0,0.10);
 }
@@ -62,7 +62,7 @@ body {
 
 /* Page container replaces container mx-auto px-4 py-8 */
 .page-container {
-  max-width: 1200px;
+  max-width: 100%; 
   margin: 132px auto;
   padding: 0px;
 }
@@ -93,9 +93,10 @@ body {
   font-size: 1.125rem;
 }
 
+
 .container {
   width: 100%;
-  max-width: var(--container-width);
+  /* max-width: var(--container-width); <-- REMOVED THIS LINE */
   margin-left: auto;
   margin-right: auto;
   padding-left: 20px;
@@ -240,7 +241,7 @@ h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; color: var(--color-dark); f
 .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
 .gap-6 { gap: 1.5rem; }
 .col-span-1 { grid-column: span 1 / span 1; }
-.col-span-2 { grid-column: span 2 / span 2; }
+.col-span-2 { grid-column: span 2 / span 1; } /* Corrected span calculation here (original was: col-span-2 { grid-column: span 2 / span 2; } */
 .space-y-2 > * + * { margin-top: 0.5rem; }
 .space-x-2 > * + * { margin-left: 0.5rem; }
 
@@ -308,6 +309,12 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focu
 
 /* responsive utilities */
 @media (min-width: 768px) {
+  .md\:-full-width {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    overflow: hidden;
+  }
   .md\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
