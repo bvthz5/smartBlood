@@ -692,7 +692,7 @@ export default function Home() {
                 </svg>
               </a>
             </div>
-            <p>&copy; 2024 SmartBlood Connect. {language === 'en' ? 'All rights reserved.' : 'എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്തം.'}</p>
+            <p>&copy; {new Date().getFullYear()} SmartBlood Connect. {language === 'en' ? 'All rights reserved.' : 'എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്തം.'}</p>
           </div>
         </div>
       </footer>

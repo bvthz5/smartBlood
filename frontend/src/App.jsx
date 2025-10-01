@@ -9,6 +9,9 @@ import { syncHeaderAlertHeights } from "./utils/layoutOffsets";
 // Pages
 import Home from "./pages/Home";
 import About from "./pages/About";
+import FAQ from "./pages/FAQ";
+import Policies from "./pages/Policies";
+import Contact from "./pages/Contact";
 
 // Donor pages
 import DonorRegister from "./pages/donor/Register";
@@ -42,6 +45,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/policies" element={<Policies />} />
+            <Route path="/contact" element={<Contact />} />
 
             {/* General Auth Routes */}
             <Route path="/register" element={<DonorRegister />} />

@@ -203,53 +203,63 @@ export default function About() {
     {
       year: "2020",
       title: "Foundation",
-      description: "SmartBlood was conceptualized during the COVID-19 pandemic when blood shortages became critical across Kerala."
+      description: "SmartBlood was born from a vision to solve blood shortage crises during the pandemic."
     },
     {
       year: "2021",
       title: "Development",
-      description: "Core platform development with real-time matching algorithms and hospital integration capabilities."
+      description: "We built our core platform with real-time matching and hospital integration."
     },
     {
       year: "2022",
-      title: "Pilot Launch",
-      description: "Successfully launched in 5 major hospitals across Kerala with 100+ registered donors."
+      title: "Launch",
+      description: "Successfully launched in 5 major hospitals with 100+ registered donors."
     },
     {
       year: "2023",
       title: "Expansion",
-      description: "Expanded to all 14 districts with 50+ partner hospitals and 1000+ registered donors."
+      description: "Reached all 14 districts with 50+ partner hospitals and 1000+ donors."
     },
     {
       year: "2024",
-      title: "Current",
-      description: "Serving the entire state with advanced features, mobile app, and comprehensive analytics."
+      title: "Growth",
+      description: "Serving Kerala with advanced features, mobile app, and analytics."
+    },
+    {
+      year: "2025",
+      title: "Future",
+      description: "Expanding nationwide with AI, blockchain security, and IoT integration."
     }
   ] : [
     {
       year: "2020",
       title: "സ്ഥാപനം",
-      description: "കോവിഡ്-19 പാൻഡെമിക് സമയത്ത് കേരളത്തിൽ രക്ത കുറവ് നിർണായകമായിത്തീർന്നപ്പോൾ സ്മാർട്ട് ബ്ലഡ് ആശയപരമായി രൂപപ്പെടുത്തി."
+      description: "പാൻഡെമിക് സമയത്ത് രക്ത കുറവ് പ്രശ്നം പരിഹരിക്കാൻ സ്മാർട്ട് ബ്ലഡ് ആരംഭിച്ചു."
     },
     {
       year: "2021",
       title: "വികസനം",
-      description: "റിയൽ-ടൈം മാച്ചിംഗ് അൽഗോരിതങ്ങളും ആശുപത്രി സംയോജന കഴിവുകളും ഉള്ള കോർ പ്ലാറ്റ്ഫോം വികസനം."
+      description: "റിയൽ-ടൈം മാച്ചിംഗും ആശുപത്രി സംയോജനവും ഉള്ള കോർ പ്ലാറ്റ്ഫോം നിർമ്മിച്ചു."
     },
     {
       year: "2022",
-      title: "പൈലറ്റ് ലോഞ്ച്",
-      description: "കേരളത്തിലെ 5 പ്രധാന ആശുപത്രികളിൽ 100+ രജിസ്റ്റർ ചെയ്ത ദാനികളുമായി വിജയകരമായി ലോഞ്ച് ചെയ്തു."
+      title: "ലോഞ്ച്",
+      description: "5 പ്രധാന ആശുപത്രികളിൽ 100+ ദാനികളുമായി വിജയകരമായി ആരംഭിച്ചു."
     },
     {
       year: "2023",
       title: "വിപുലീകരണം",
-      description: "എല്ലാ 14 ജില്ലകളിലും 50+ പങ്കാളി ആശുപത്രികളും 1000+ രജിസ്റ്റർ ചെയ്ത ദാനികളുമായി വിപുലീകരിച്ചു."
+      description: "എല്ലാ 14 ജില്ലകളിലും 50+ ആശുപത്രികളും 1000+ ദാനികളും."
     },
     {
       year: "2024",
-      title: "ഇപ്പോൾ",
-      description: "മുമ്പോട്ടുള്ള സവിശേഷതകൾ, മൊബൈൽ ആപ്പ്, സമഗ്ര വിശകലനങ്ങൾ എന്നിവയുമായി മുഴുവൻ സംസ്ഥാനത്തിനും സേവനം നൽകുന്നു."
+      title: "വളർച്ച",
+      description: "മുമ്പോട്ടുള്ള സവിശേഷതകൾ, മൊബൈൽ ആപ്പ്, വിശകലനങ്ങളുമായി കേരളത്തിന് സേവനം."
+    },
+    {
+      year: "2025",
+      title: "ഭാവി",
+      description: "AI, ബ്ലോക്ക്‌ചെയിൻ സുരക്ഷ, IoT എന്നിവയുമായി ദേശീയ വിപുലീകരണം."
     }
   ];
 
