@@ -18,11 +18,15 @@ def seed_admin_user():
     existing_admin = User.query.filter_by(email=admin_email, role='admin').first()
     if not existing_admin:
         admin_user = User(
-            name="Admin", 
+            first_name="Admin", 
+            last_name="User",
+            phone="0000000000",  # Required field
             email=admin_email, 
             password_hash=bcrypt.hash(admin_password), 
             role="admin", 
-            is_verified=True
+            status="active",
+            is_phone_verified=True,
+            is_email_verified=True
         )
         db.session.add(admin_user)
         db.session.commit()

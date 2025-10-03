@@ -8,6 +8,8 @@ export default function Nav() {
   const [open, setOpen] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
   const [language, setLanguage] = useState('en')
+  const [loginDropdownOpen, setLoginDropdownOpen] = useState(false)
+  const [navDropdownOpen, setNavDropdownOpen] = useState(false)
   const headerRef = useRef(null)
   const location = useLocation()
 
@@ -15,6 +17,21 @@ export default function Nav() {
   useEffect(() => {
     const savedLanguage = localStorage.getItem('language') || 'en'
     setLanguage(savedLanguage)
+  }, [])
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.header__dropdown')) {
+        setLoginDropdownOpen(false)
+        setNavDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
   }, [])
 
   useEffect(() => {
@@ -45,13 +62,6 @@ export default function Nav() {
     window.dispatchEvent(new CustomEvent('languageChanged', { detail: newLanguage }))
   }
 
-  const handleAboutClick = (e) => {
-    e.preventDefault()
-    const aboutElement = document.getElementById('about')
-    if (aboutElement) {
-      aboutElement.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
 
   // Hide navbar completely on register/login pages
   if (location.pathname === '/register' || location.pathname === '/login') {
@@ -88,7 +98,45 @@ export default function Nav() {
           </div>
 
           <nav className="header__nav" role="navigation" aria-label="Main navigation">
-            <button className="header__link header__link--button" onClick={handleAboutClick}>About</button>
+            <div className={`header__dropdown ${navDropdownOpen ? 'open' : ''}`}>
+              <button 
+                className="header__link header__link--button" 
+                onClick={() => setNavDropdownOpen(!navDropdownOpen)}
+              >
+                More
+                <span className="header__dropdown-arrow">▼</span>
+              </button>
+              <div className="header__dropdown-menu">
+                <NavLink 
+                  to="/about-us" 
+                  className="header__dropdown-item"
+                  onClick={() => setNavDropdownOpen(false)}
+                >
+                  About
+                </NavLink>
+                <NavLink 
+                  to="/faq" 
+                  className="header__dropdown-item"
+                  onClick={() => setNavDropdownOpen(false)}
+                >
+                  FAQ
+                </NavLink>
+                <NavLink 
+                  to="/policies" 
+                  className="header__dropdown-item"
+                  onClick={() => setNavDropdownOpen(false)}
+                >
+                  Policies
+                </NavLink>
+                <NavLink 
+                  to="/contact" 
+                  className="header__dropdown-item"
+                  onClick={() => setNavDropdownOpen(false)}
+                >
+                  Contact
+                </NavLink>
+              </div>
+            </div>
             <NavLink className="header__link" to="/seeker/request">Find Blood</NavLink>
             <NavLink className="header__link" to="/donor/register">Donate Blood</NavLink>
           </nav>
@@ -96,23 +144,46 @@ export default function Nav() {
           <div className="header__actions">
             <div className="header__controls">
               <button 
-                className="header__toggle-btn" 
+                className="header__toggle-btn header__toggle-btn--dark-mode" 
                 onClick={toggleDarkMode}
                 aria-label="Toggle dark mode"
               >
                 {darkMode ? '☀️' : '🌙'}
               </button>
               <button 
-                className="header__toggle-btn" 
+                className="header__toggle-btn header__toggle-btn--language" 
                 onClick={toggleLanguage}
                 aria-label="Toggle language"
               >
                 {language === 'en' ? '🌐 English' : '🌐 മലയാളം'}
               </button>
             </div>
-            <NavLink to="/donor/register" className="btn header__cta" aria-label="Register or Login">
-              {language === 'en' ? 'Register / Login' : 'രജിസ്റ്റർ / ലോഗിൻ'}
-            </NavLink>
+            <div className={`header__dropdown ${loginDropdownOpen ? 'open' : ''}`}>
+              <button 
+                className="btn header__cta" 
+                onClick={() => setLoginDropdownOpen(!loginDropdownOpen)}
+                aria-label="Login Options"
+              >
+                {language === 'en' ? 'Login' : 'ലോഗിൻ'}
+                <span className="header__dropdown-arrow">▼</span>
+              </button>
+              <div className="header__dropdown-menu">
+                <NavLink 
+                  to="/donor/login" 
+                  className="header__dropdown-item"
+                  onClick={() => setLoginDropdownOpen(false)}
+                >
+                  {language === 'en' ? 'Donor Login' : 'ദാതാവ് ലോഗിൻ'}
+                </NavLink>
+                <NavLink 
+                  to="/seeker/request" 
+                  className="header__dropdown-item"
+                  onClick={() => setLoginDropdownOpen(false)}
+                >
+                  {language === 'en' ? 'Seeker Login' : 'അന്വേഷകൻ ലോഗിൻ'}
+                </NavLink>
+              </div>
+            </div>
 
             <button
               className="header__mobile-toggle"
@@ -128,10 +199,14 @@ export default function Nav() {
 
         {open && (
           <div className="header__mobile" role="menu">
-            <button className="header__link header__link--button" onClick={(e) => { handleAboutClick(e); setOpen(false); }}>About</button>
+            <NavLink className="header__link" to="/about-us" onClick={() => setOpen(false)}>About</NavLink>
+            <NavLink className="header__link" to="/faq" onClick={() => setOpen(false)}>FAQ</NavLink>
+            <NavLink className="header__link" to="/policies" onClick={() => setOpen(false)}>Policies</NavLink>
+            <NavLink className="header__link" to="/contact" onClick={() => setOpen(false)}>Contact</NavLink>
             <NavLink className="header__link" to="/seeker/request" onClick={() => setOpen(false)}>Find Blood</NavLink>
             <NavLink className="header__link" to="/donor/register" onClick={() => setOpen(false)}>Donate Blood</NavLink>
-            <NavLink className="btn btn--outline" to="/donor/register" onClick={() => setOpen(false)}>Register / Login</NavLink>
+            <NavLink className="btn btn--outline" to="/donor/login" onClick={() => setOpen(false)}>Donor Login</NavLink>
+            <NavLink className="btn btn--outline" to="/seeker/request" onClick={() => setOpen(false)}>Seeker Login</NavLink>
           </div>
         )}
       </header>
@@ -155,6 +230,45 @@ export default function Nav() {
         </div>
 
         <nav className="header__nav" role="navigation" aria-label="Main navigation">
+          <div className={`header__dropdown ${navDropdownOpen ? 'open' : ''}`}>
+            <button 
+              className="header__link header__link--button" 
+              onClick={() => setNavDropdownOpen(!navDropdownOpen)}
+            >
+              More
+              <span className="header__dropdown-arrow">▼</span>
+            </button>
+            <div className="header__dropdown-menu">
+                <NavLink 
+                  to="/about-us" 
+                  className="header__dropdown-item"
+                  onClick={() => setNavDropdownOpen(false)}
+                >
+                  About
+                </NavLink>
+              <NavLink 
+                to="/faq" 
+                className="header__dropdown-item"
+                onClick={() => setNavDropdownOpen(false)}
+              >
+                FAQ
+              </NavLink>
+              <NavLink 
+                to="/policies" 
+                className="header__dropdown-item"
+                onClick={() => setNavDropdownOpen(false)}
+              >
+                Policies
+              </NavLink>
+              <NavLink 
+                to="/contact" 
+                className="header__dropdown-item"
+                onClick={() => setNavDropdownOpen(false)}
+              >
+                Contact
+              </NavLink>
+            </div>
+          </div>
           <NavLink className="header__link" to="/seeker/request">Find Blood</NavLink>
           <NavLink className="header__link" to="/donor/register">Donate Blood</NavLink>
         </nav>
@@ -162,23 +276,46 @@ export default function Nav() {
         <div className="header__actions">
           <div className="header__controls">
             <button 
-              className="header__toggle-btn" 
+              className="header__toggle-btn header__toggle-btn--dark-mode" 
               onClick={toggleDarkMode}
               aria-label="Toggle dark mode"
             >
               {darkMode ? '☀️' : '🌙'}
             </button>
             <button 
-              className="header__toggle-btn" 
+              className="header__toggle-btn header__toggle-btn--language" 
               onClick={toggleLanguage}
               aria-label="Toggle language"
             >
               {language === 'en' ? '🌐 English' : '🌐 മലയാളം'}
             </button>
           </div>
-          <NavLink to="/donor/register" className="btn header__cta" aria-label="Register or Login">
-            {language === 'en' ? 'Register / Login' : 'രജിസ്റ്റർ / ലോഗിൻ'}
-          </NavLink>
+          <div className={`header__dropdown ${loginDropdownOpen ? 'open' : ''}`}>
+            <button 
+              className="btn header__cta" 
+              onClick={() => setLoginDropdownOpen(!loginDropdownOpen)}
+              aria-label="Login Options"
+            >
+              {language === 'en' ? 'Login' : 'ലോഗിൻ'}
+              <span className="header__dropdown-arrow">▼</span>
+            </button>
+            <div className="header__dropdown-menu">
+              <NavLink 
+                to="/donor/login" 
+                className="header__dropdown-item"
+                onClick={() => setLoginDropdownOpen(false)}
+              >
+                {language === 'en' ? 'Donor Login' : 'ദാതാവ് ലോഗിൻ'}
+              </NavLink>
+              <NavLink 
+                to="/seeker/request" 
+                className="header__dropdown-item"
+                onClick={() => setLoginDropdownOpen(false)}
+              >
+                {language === 'en' ? 'Seeker Login' : 'അന്വേഷകൻ ലോഗിൻ'}
+              </NavLink>
+            </div>
+          </div>
 
           <button
             className="header__mobile-toggle"
@@ -194,9 +331,14 @@ export default function Nav() {
 
       {open && (
         <div className="header__mobile" role="menu">
+          <NavLink className="header__link" to="/about-us" onClick={() => setOpen(false)}>About</NavLink>
+          <NavLink className="header__link" to="/faq" onClick={() => setOpen(false)}>FAQ</NavLink>
+          <NavLink className="header__link" to="/policies" onClick={() => setOpen(false)}>Policies</NavLink>
+          <NavLink className="header__link" to="/contact" onClick={() => setOpen(false)}>Contact</NavLink>
           <NavLink className="header__link" to="/seeker/request" onClick={() => setOpen(false)}>Find Blood</NavLink>
           <NavLink className="header__link" to="/donor/register" onClick={() => setOpen(false)}>Donate Blood</NavLink>
-          <NavLink className="btn btn--outline" to="/donor/register" onClick={() => setOpen(false)}>Register / Login</NavLink>
+          <NavLink className="btn btn--outline" to="/donor/login" onClick={() => setOpen(false)}>Donor Login</NavLink>
+          <NavLink className="btn btn--outline" to="/seeker/request" onClick={() => setOpen(false)}>Seeker Login</NavLink>
         </div>
       )}
     </header>

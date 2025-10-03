@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { login } from "../../api";
+import { login } from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import '../../styles/donor-auth.css'
 
@@ -25,10 +25,24 @@ export default function Login(){
       <h2 className="text-xl font-semibold mb-3">Donor Login</h2>
       <form onSubmit={submit}>
         <div className="form-row">
-          <input className="" placeholder="Email or Phone" value={ident} onChange={e=>setIdent(e.target.value)} />
+          <input 
+            className="" 
+            placeholder="Email or Phone" 
+            value={ident} 
+            onChange={e=>setIdent(e.target.value)}
+            autoComplete="username"
+            type="email"
+          />
         </div>
         <div className="form-row">
-          <input type="password" className="" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)} />
+          <input 
+            type="password" 
+            className="" 
+            placeholder="Password" 
+            value={password} 
+            onChange={e=>setPassword(e.target.value)}
+            autoComplete="current-password"
+          />
         </div>
         <div style={{display:'flex', justifyContent:'space-between', marginBottom:12}}>
           <a className="text-sm text-blue-600" href="/donor/forgot">Forgot?</a>

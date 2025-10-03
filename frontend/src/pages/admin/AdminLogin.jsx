@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import api from "../../api";
+import api from "../../services/api";
 
 export default function AdminLogin(){
   const [email, setEmail] = useState("");
@@ -17,8 +17,22 @@ export default function AdminLogin(){
     <div className="max-w-md mx-auto bg-white p-6 rounded shadow">
       <h2 className="text-lg font-semibold mb-3">Admin Login</h2>
       <form onSubmit={submit}>
-        <input className="w-full border rounded p-2 mb-2" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} />
-        <input type="password" className="w-full border rounded p-2 mb-2" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)} />
+        <input 
+          className="w-full border rounded p-2 mb-2" 
+          placeholder="Email" 
+          value={email} 
+          onChange={e=>setEmail(e.target.value)}
+          autoComplete="username"
+          type="email"
+        />
+        <input 
+          type="password" 
+          className="w-full border rounded p-2 mb-2" 
+          placeholder="Password" 
+          value={password} 
+          onChange={e=>setPassword(e.target.value)}
+          autoComplete="current-password"
+        />
         <button className="w-full bg-indigo-600 text-white p-2 rounded">Login</button>
       </form>
     </div>

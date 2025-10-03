@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createRequest } from "../../api";
+import { createRequest } from "../../services/api";
 
 export default function SeekerRequest(){
   const [form, setForm] = useState({ blood_group:"", units_required:1, urgency:"normal", location:"" });

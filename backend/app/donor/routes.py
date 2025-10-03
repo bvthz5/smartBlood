@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request, current_app
 from app.extensions import db
-from app.models import User, Donor, MatchRecord, DonationHistory
+from app.models import User, Donor, Match, DonationHistory
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 
@@ -15,11 +15,11 @@ def get_me():
     donor = Donor.query.filter_by(user_id=uid).first()
     return jsonify({
         "id": user.id,
-        "name": user.name,
+        "name": f"{user.first_name} {user.last_name or ''}".strip(),
         "email": user.email,
         "phone": user.phone,
         "blood_group": donor.blood_group if donor else None,
-        "availability_status": donor.availability_status if donor else None,
+        "availability_status": donor.availability if donor else None,
         "last_donation_date": donor.last_donation_date.isoformat() if donor and donor.last_donation_date else None
     })
 
@@ -30,10 +30,10 @@ def update_me():
     data = request.get_json() or {}
     user = User.query.get(uid)
     donor = Donor.query.filter_by(user_id=uid).first()
-    user.name = data.get("name", user.name)
+    user.first_name = data.get("name", user.first_name)
     donor.blood_group = data.get("blood_group", donor.blood_group)
     donor.location_lat = data.get("location_lat", donor.location_lat)
-    donor.location_lon = data.get("location_lon", donor.location_lon)
+    donor.location_lng = data.get("location_lon", donor.location_lng)
     db.session.commit()
     return jsonify({"message":"profile updated"})
 
@@ -44,18 +44,18 @@ def set_availability():
     data = request.get_json() or {}
     status = data.get("status")
     donor = Donor.query.filter_by(user_id=uid).first()
-    donor.availability_status = status
+    donor.availability = status.lower() == "available"
     db.session.commit()
-    return jsonify({"status": donor.availability_status})
+    return jsonify({"status": "available" if donor.availability else "unavailable"})
 
 @donor_bp.route("/dashboard", methods=["GET"])
 @jwt_required()
 def dashboard():
     uid = get_jwt_identity()
     donor = Donor.query.filter_by(user_id=uid).first()
-    active_matches = MatchRecord.query.filter_by(donor_id=donor.id, response=None).count()
+    active_matches = Match.query.filter_by(donor_id=donor.id, status="notified").count()
     return jsonify({
-        "availability_status": donor.availability_status,
+        "availability_status": "available" if donor.availability else "unavailable",
         "reliability_score": donor.reliability_score,
         "last_donation_date": donor.last_donation_date.isoformat() if donor.last_donation_date else None,
         "active_matches_count": active_matches
@@ -69,17 +69,16 @@ def list_matches():
     if not donor:
         return jsonify({"error": "donor profile not found"}), 404
     # list pending or recent matches
-    q = MatchRecord.query.filter_by(donor_id=donor.id).order_by(MatchRecord.created_at.desc()).limit(50)
+    q = Match.query.filter_by(donor_id=donor.id).order_by(Match.notified_at.desc()).limit(50)
     rows = []
     for m in q:
         rows.append({
             "match_id": m.id,
             "request_id": m.request_id,
-            "score": m.score,
-            "rank": m.rank,
-            "response": m.response,
-            "response_at": m.response_at.isoformat() if m.response_at else None,
-            "created_at": m.created_at.isoformat() if m.created_at else None
+            "score": m.match_score,
+            "response": m.status,
+            "response_at": m.responded_at.isoformat() if m.responded_at else None,
+            "notified_at": m.notified_at.isoformat() if m.notified_at else None
         })
     return jsonify(rows)
 
@@ -102,16 +101,16 @@ def respond_to_match():
     if action not in ("accept", "reject"):
         return jsonify({"error":"invalid action"}), 400
 
-    mr = MatchRecord.query.with_for_update().filter_by(id=match_id, donor_id=donor.id).first()
+    mr = Match.query.with_for_update().filter_by(id=match_id, donor_id=donor.id).first()
     if not mr:
         return jsonify({"error":"match not found"}), 404
-    if mr.response:
+    if mr.status != "notified":
         return jsonify({"error":"already responded"}), 409
 
     try:
         # atomic update
-        mr.response = "accepted" if action == "accept" else "rejected"
-        mr.response_at = datetime.utcnow()
+        mr.status = "accepted" if action == "accept" else "declined"
+        mr.responded_at = datetime.utcnow()
         db.session.add(mr)
 
         if action == "accept":
@@ -129,4 +128,4 @@ def respond_to_match():
         current_app.logger.exception("error responding to match")
         return jsonify({"error":"internal"}), 500
 
-    return jsonify({"match_id": mr.id, "response": mr.response}), 200
+    return jsonify({"match_id": mr.id, "response": mr.status}), 200

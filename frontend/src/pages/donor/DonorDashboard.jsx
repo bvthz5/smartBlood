@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getDonorProfile, setAvailability, getDonorMatches, respondToMatch } from "../../api";
+import { getDonorProfile, setAvailability, getDonorMatches, respondToMatch } from "../../services/api";
 
 export default function DonorDashboard(){
   const [profile, setProfile] = useState(null);

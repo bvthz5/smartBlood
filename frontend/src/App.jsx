@@ -12,6 +12,7 @@ import About from "./pages/About";
 import FAQ from "./pages/FAQ";
 import Policies from "./pages/Policies";
 import Contact from "./pages/Contact";
+import NotFound from "./pages/NotFound";
 
 // Donor pages
 import DonorRegister from "./pages/donor/Register";
@@ -45,6 +46,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/about-us" element={<About />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/policies" element={<Policies />} />
             <Route path="/contact" element={<Contact />} />
@@ -89,15 +91,7 @@ function App() {
             <Route path="/admin/login" element={<AdminLogin />} />
 
             {/* 404 Route */}
-            <Route 
-              path="*" 
-              element={
-                <div className="error-page">
-                  <h1 className="error-title">404</h1>
-                  <p className="error-message">Page not found</p>
-                </div>
-              } 
-            />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
       </div>

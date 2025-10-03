@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import api from "../../api";
+import api from "../../services/api";
 
 export default function ChangePassword(){
   const [oldPass, setOld] = useState("");
@@ -20,8 +20,22 @@ export default function ChangePassword(){
     <div className="max-w-md mx-auto bg-white p-6 shadow rounded">
       <h2 className="text-lg font-semibold mb-3">Change Password</h2>
       <form onSubmit={submit}>
-        <input className="w-full border p-2 rounded mb-2" placeholder="Old password" type="password" value={oldPass} onChange={e=>setOld(e.target.value)} />
-        <input className="w-full border p-2 rounded mb-2" placeholder="New password" type="password" value={newPass} onChange={e=>setNew(e.target.value)} />
+        <input 
+          className="w-full border p-2 rounded mb-2" 
+          placeholder="Old password" 
+          type="password" 
+          value={oldPass} 
+          onChange={e=>setOld(e.target.value)}
+          autoComplete="current-password"
+        />
+        <input 
+          className="w-full border p-2 rounded mb-2" 
+          placeholder="New password" 
+          type="password" 
+          value={newPass} 
+          onChange={e=>setNew(e.target.value)}
+          autoComplete="new-password"
+        />
         <button className="w-full bg-blue-600 text-white p-2 rounded">Change</button>
       </form>
     </div>

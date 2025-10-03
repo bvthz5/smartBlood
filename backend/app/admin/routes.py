@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.models import User, Request, AdminAuditLog
+from app.models import User, Request
 from app.extensions import db
 from passlib.hash import bcrypt
 
@@ -29,8 +29,8 @@ def block_user(user_id):
     user = User.query.get(user_id)
     if not user:
         return jsonify({"error":"not found"}), 404
-    user.is_active = False
-    log = AdminAuditLog(admin_user_id=None, action="block_user", target=str(user_id), details="blocked by admin via seed endpoint")
-    db.session.add(log)
+    user.status = "blocked"
+    # TODO: Implement audit logging with new schema
+    print(f"Admin action: block_user for user {user_id}")
     db.session.commit()
     return jsonify({"message":"user blocked"})

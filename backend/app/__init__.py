@@ -1,6 +1,7 @@
 import os
 import sys
 from flask import Flask, jsonify
+from dotenv import load_dotenv
 from .config import config
 from .extensions import db, migrate, jwt
 from .services.database import check_database_connection
@@ -39,6 +40,9 @@ def initialize_database(app):
 
 def create_app(config_name='default'):
     """Application factory pattern"""
+    # Load environment variables from .env file
+    load_dotenv()
+    
     app = Flask(__name__, static_folder=None)
     app.config.from_object(config[config_name])
 

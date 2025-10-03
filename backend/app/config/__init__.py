@@ -39,7 +39,7 @@ class ProductionConfig(Config):
 class TestingConfig(Config):
     """Testing configuration"""
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URL", "sqlite:///:memory:")
+    SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URL", "postgresql+psycopg2://postgres:123@localhost:5432/smartblood_test")
 
 config = {
     'development': DevelopmentConfig,

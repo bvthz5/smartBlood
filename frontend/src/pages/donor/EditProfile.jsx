@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getDonorProfile, updateDonorProfile } from "../../api";
+import { getDonorProfile, updateDonorProfile } from "../../services/api";
 
 export default function EditProfile(){
   const [form, setForm] = useState(null);

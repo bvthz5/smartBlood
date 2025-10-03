@@ -1,7 +1,7 @@
 # backend/app/admin/match_routes.py
 from flask import Blueprint, request, jsonify
 from app.extensions import db
-from app.models import Request, Donor, MatchRecord
+from app.models import Request, Donor, Match
 from datetime import datetime
 from sqlalchemy import and_
 
@@ -18,7 +18,7 @@ def generate_matches():
     Body: { request_id, top_n (default 5) }
     Strategy:
       - select donors with same blood_group and availability_status == 'available'
-      - rank by arbitrary score (we don't have geodata here), create MatchRecord rows
+      - rank by arbitrary score (we don't have geodata here), create Match rows
     """
     data = request.get_json() or {}
     req_id = data.get("request_id")
@@ -39,7 +39,7 @@ def generate_matches():
     sorted_cand = sorted(candidates, key=lambda d: (-(d.reliability_score or 0)))
     created = 0
     for rank, donor in enumerate(sorted_cand[:top_n], start=1):
-        mr = MatchRecord(request_id=req.id, donor_id=donor.id, score=donor.reliability_score or 0.0, rank=rank, response=None, created_at=datetime.utcnow())
+        mr = Match(request_id=req.id, donor_id=donor.id, match_score=donor.reliability_score or 0.0, status="notified", notified_at=datetime.utcnow())
         db.session.add(mr)
         created += 1
     db.session.commit()

@@ -1,8 +1,4 @@
-# Python / Backend
-.venv/
-venv/
-env/
-ENV/
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -25,39 +21,42 @@ wheels/
 *.egg
 MANIFEST
 
-# Database
-*.db
-*.sqlite3
-db.sqlite3
-dev.db
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
 
-# Environment variables
+# Environment Variables
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-*.env
 
-# Flask/Django specific
+# Database
+*.db
+*.sqlite
+*.sqlite3
+instance/
+
+# Flask
 instance/
 .webassets-cache
-.migrations/
 
-# Node.js / Frontend
+# Node.js
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 lerna-debug.log*
 
 # Build outputs
 dist/
-dist-ssr/
 build/
-coverage/
-.nyc_output
+*.tgz
+*.tar.gz
 
 # Runtime data
 pids
@@ -65,34 +64,64 @@ pids
 *.seed
 *.pid.lock
 
-# Logs
-logs/
-*.log
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
 
-# Temporary files
-*.tmp
-*.temp
-*.bak
-*.swp
-*.swo
-*~
+# nyc test coverage
+.nyc_output
 
-# Cache directories
-.cache/
-.parcel-cache/
-.next/
-.nuxt/
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# next.js build output
+.next
+
+# nuxt.js build output
+.nuxt
+
+# vuepress build output
 .vuepress/dist
 
-# Editor directories and files
+# Serverless directories
+.serverless
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# IDE
 .vscode/
-!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
 *~
 
-# OS generated files
+# OS
 .DS_Store
 .DS_Store?
 ._*
@@ -100,16 +129,79 @@ logs/
 .Trashes
 ehthumbs.db
 Thumbs.db
-Desktop.ini
 
-# Windows
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# Logs
+logs
+*.log
 
-# Local development
-*.local
-.cache/
-.temp/
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Test files
+test_*.py
+*_test.py
+tests/
+__tests__/
+
+# Documentation build
+docs/_build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Frontend specific
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/.cache/
+
+# Backend specific
+backend/instance/
+backend/*.db
+backend/*.sqlite
+backend/*.sqlite3
+backend/__pycache__/
+backend/app/__pycache__/
+backend/app/*/__pycache__/

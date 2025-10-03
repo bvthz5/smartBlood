@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import api from "../../api";
+import api from "../../services/api";
 
 export default function ForgotPassword(){
   const [ident, setIdent] = useState("");
@@ -34,9 +34,29 @@ export default function ForgotPassword(){
       <div className="max-w-md mx-auto bg-white p-6 shadow rounded">
         <h2 className="text-lg font-semibold mb-3">Reset Password</h2>
         <form onSubmit={reset}>
-          <input className="w-full border p-2 rounded mb-2" placeholder="User ID" value={userId||''} onChange={e=>setUserId(e.target.value)} />
-          <input className="w-full border p-2 rounded mb-2" placeholder="OTP" value={otp} onChange={e=>setOtp(e.target.value)} />
-          <input className="w-full border p-2 rounded mb-2" type="password" placeholder="New password" value={newPassword} onChange={e=>setNewPassword(e.target.value)} />
+          <input 
+            className="w-full border p-2 rounded mb-2" 
+            placeholder="User ID" 
+            value={userId||''} 
+            onChange={e=>setUserId(e.target.value)}
+            autoComplete="username"
+          />
+          <input 
+            className="w-full border p-2 rounded mb-2" 
+            placeholder="OTP" 
+            value={otp} 
+            onChange={e=>setOtp(e.target.value)}
+            autoComplete="one-time-code"
+            inputMode="numeric"
+          />
+          <input 
+            className="w-full border p-2 rounded mb-2" 
+            type="password" 
+            placeholder="New password" 
+            value={newPassword} 
+            onChange={e=>setNewPassword(e.target.value)}
+            autoComplete="new-password"
+          />
           <button className="w-full bg-green-600 text-white p-2 rounded">Reset</button>
         </form>
       </div>
@@ -47,7 +67,14 @@ export default function ForgotPassword(){
     <div className="max-w-md mx-auto bg-white p-6 shadow rounded">
       <h2 className="text-lg font-semibold mb-3">Forgot Password</h2>
       <form onSubmit={sendOtp}>
-        <input className="w-full border p-2 rounded mb-2" placeholder="Email or Phone" value={ident} onChange={e=>setIdent(e.target.value)} />
+        <input 
+          className="w-full border p-2 rounded mb-2" 
+          placeholder="Email or Phone" 
+          value={ident} 
+          onChange={e=>setIdent(e.target.value)}
+          autoComplete="username"
+          type="email"
+        />
         <button className="w-full bg-blue-600 text-white p-2 rounded">Send OTP</button>
       </form>
     </div>

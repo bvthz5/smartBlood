@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, current_app
 from datetime import datetime, timedelta
 from app.extensions import db
-from app.models import User, Donor, OTPSession, RefreshToken
+from app.models import User, Donor, OTPSession
 from .utils import generate_otp, otp_hash, verify_otp, hash_password, verify_password
 from flask_jwt_extended import create_access_token, create_refresh_token, decode_token
 import logging
@@ -39,7 +39,7 @@ def register():
     otp = generate_otp()
     code_h = otp_hash(otp)
     expires = datetime.utcnow() + timedelta(minutes=current_app.config.get("ACCESS_EXPIRES_MINUTES", 5))
-    otp_sess = OTPSession(user_id=user.id, code_hash=code_h, type="phone_verification", expires_at=expires)
+    otp_sess = OTPSession(user_id=user.id, otp_hash=code_h, channel="phone", destination=phone, expires_at=expires)
     db.session.add(otp_sess)
     db.session.commit()
 
@@ -53,31 +53,25 @@ def verify_otp_route():
     data = request.get_json() or {}
     user_id = data.get("user_id")
     otp = data.get("otp")
-    sess = OTPSession.query.filter_by(user_id=user_id, type="phone_verification", used=False).order_by(OTPSession.created_at.desc()).first()
+    sess = OTPSession.query.filter_by(user_id=user_id, channel="phone", used=False).order_by(OTPSession.created_at.desc()).first()
     if not sess:
         return jsonify({"error":"no otp session"}), 400
     if sess.expires_at < datetime.utcnow():
         return jsonify({"error":"otp expired"}), 400
-    if not verify_otp(otp, sess.code_hash):
-        sess.attempts = (sess.attempts or 0) + 1
+    if not verify_otp(otp, sess.otp_hash):
+        sess.attempts_left = (sess.attempts_left or 0) + 1
         db.session.commit()
         return jsonify({"error":"invalid otp"}), 400
     sess.used = True
     user = User.query.get(user_id)
-    user.is_verified = True
+    user.is_phone_verified = True
     db.session.commit()
 
     # create tokens
-    access = create_access_token(identity=user.id, expires_delta=timedelta(minutes=current_app.config.get("ACCESS_EXPIRES_MINUTES")))
-    refresh = create_refresh_token(identity=user.id, expires_delta=timedelta(days=current_app.config.get("REFRESH_EXPIRES_DAYS")))
-    # store refresh jti
-    decoded = decode_token(refresh)
-    jti = decoded.get("jti")
-    expires_at = datetime.utcfromtimestamp(decoded.get("exp"))
-    rt = RefreshToken(jti=jti, user_id=user.id, expires_at=expires_at)
-    db.session.add(rt)
-    db.session.commit()
-    return jsonify({"access_token": access, "refresh_token": refresh, "user": {"id": user.id, "name": user.name}}), 200
+    access = create_access_token(identity=user.id, expires_delta=timedelta(minutes=current_app.config.get("ACCESS_EXPIRES_MINUTES", 15)))
+    refresh = create_refresh_token(identity=user.id, expires_delta=timedelta(days=current_app.config.get("REFRESH_EXPIRES_DAYS", 7)))
+    # TODO: Implement refresh token storage with new schema
+    return jsonify({"access_token": access, "refresh_token": refresh, "user": {"id": user.id, "name": user.first_name}}), 200
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
@@ -91,47 +85,19 @@ def login():
         user = User.query.filter_by(phone=ident).first()
     if not user or not verify_password(password, user.password_hash):
         return jsonify({"error":"invalid credentials"}), 401
-    if not user.is_verified:
+    if not user.is_phone_verified:
         return jsonify({"error":"not verified"}), 403
 
-    access = create_access_token(identity=user.id, expires_delta=timedelta(minutes=current_app.config.get("ACCESS_EXPIRES_MINUTES")))
-    refresh = create_refresh_token(identity=user.id, expires_delta=timedelta(days=current_app.config.get("REFRESH_EXPIRES_DAYS")))
-    decoded = decode_token(refresh)
-    jti = decoded.get("jti")
-    expires_at = datetime.utcfromtimestamp(decoded.get("exp"))
-    rt = RefreshToken(jti=jti, user_id=user.id, expires_at=expires_at)
-    db.session.add(rt)
-    db.session.commit()
-    return jsonify({"access_token": access, "refresh_token": refresh, "user": {"id": user.id, "name": user.name}})
+    access = create_access_token(identity=user.id, expires_delta=timedelta(minutes=current_app.config.get("ACCESS_EXPIRES_MINUTES", 15)))
+    refresh = create_refresh_token(identity=user.id, expires_delta=timedelta(days=current_app.config.get("REFRESH_EXPIRES_DAYS", 7)))
+    # TODO: Implement refresh token storage with new schema
+    return jsonify({"access_token": access, "refresh_token": refresh, "user": {"id": user.id, "name": user.first_name}})
 
-@auth_bp.route("/refresh", methods=["POST"])
-def refresh():
-    data = request.get_json() or {}
-    raw = data.get("refresh_token")
-    if not raw:
-        return jsonify({"error":"missing"}), 400
-    try:
-        decoded = decode_token(raw)
-    except Exception as e:
-        return jsonify({"error":"invalid refresh token"}), 401
-    jti = decoded.get("jti")
-    rt = RefreshToken.query.filter_by(jti=jti, revoked=False).first()
-    if not rt:
-        return jsonify({"error":"token revoked or not found"}), 401
-    # rotate
-    rt.revoked = True
-    db.session.commit()
-    # issue new
-    user_id = decoded.get("sub")
-    access = create_access_token(identity=user_id, expires_delta=timedelta(minutes=current_app.config.get("ACCESS_EXPIRES_MINUTES")))
-    new_refresh = create_refresh_token(identity=user_id, expires_delta=timedelta(days=current_app.config.get("REFRESH_EXPIRES_DAYS")))
-    d2 = decode_token(new_refresh)
-    jti2 = d2.get("jti")
-    expires_at = datetime.utcfromtimestamp(d2.get("exp"))
-    new_rt = RefreshToken(jti=jti2, user_id=user_id, expires_at=expires_at)
-    db.session.add(new_rt)
-    db.session.commit()
-    return jsonify({"access_token": access, "refresh_token": new_refresh})
+# TODO: Implement refresh endpoint with new schema
+# @auth_bp.route("/refresh", methods=["POST"])
+# def refresh():
+#     # Refresh token functionality temporarily disabled
+#     return jsonify({"error": "refresh tokens not implemented in new schema"}), 501
 
 @auth_bp.route("/forgot-password", methods=["POST"])
 def forgot_password():
@@ -146,7 +112,7 @@ def forgot_password():
         otp = generate_otp()
         code_h = otp_hash(otp)
         expires = datetime.utcnow() + timedelta(minutes=current_app.config.get("ACCESS_EXPIRES_MINUTES"))
-        sess = OTPSession(user_id=user.id, code_hash=code_h, type="password_reset", expires_at=expires)
+        sess = OTPSession(user_id=user.id, otp_hash=code_h, channel="phone" if "@" not in ident else "email", destination=ident, expires_at=expires)
         db.session.add(sess)
         db.session.commit()
         logger.info(f"DEV password-reset OTP for {ident}: {otp}")
@@ -159,11 +125,11 @@ def reset_password():
     user_id = data.get("user_id")
     otp = data.get("otp")
     new_password = data.get("new_password")
-    sess = OTPSession.query.filter_by(user_id=user_id, type="password_reset", used=False).order_by(OTPSession.created_at.desc()).first()
+    sess = OTPSession.query.filter_by(user_id=user_id, channel="phone", used=False).order_by(OTPSession.created_at.desc()).first()
     if not sess or sess.expires_at < datetime.utcnow():
         return jsonify({"error":"invalid or expired otp"}), 400
-    if not verify_otp(otp, sess.code_hash):
-        sess.attempts = (sess.attempts or 0) + 1
+    if not verify_otp(otp, sess.otp_hash):
+        sess.attempts_left = (sess.attempts_left or 0) + 1
         db.session.commit()
         return jsonify({"error":"invalid otp"}), 400
     sess.used = True

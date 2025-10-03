@@ -1,27 +1,28 @@
 // src/components/ScrollToTop.jsx
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 
 export default function ScrollToTop() {
   const { pathname } = useLocation()
+  const previousPathname = useRef(pathname)
 
   useEffect(() => {
-    // Scroll to top on route change
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'instant'
-    })
+    // Only scroll to top on actual route change, not on initial load
+    if (previousPathname.current !== pathname) {
+      // Only log in development mode
+      if (import.meta.env.DEV) {
+        console.log('ScrollToTop: Route changed from', previousPathname.current, 'to', pathname)
+      }
+      
+      // Use requestAnimationFrame for better performance
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0)
+      })
+      
+      // Update the previous pathname
+      previousPathname.current = pathname
+    }
   }, [pathname])
-
-  useEffect(() => {
-    // Scroll to top on page load/refresh
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'instant'
-    })
-  }, [])
 
   return null
 }

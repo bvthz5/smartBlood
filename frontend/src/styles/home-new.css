@@ -221,7 +221,7 @@
   right: 0;
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
   color: var(--color-white);
-  z-index: 1100;
+  z-index: 1000 !important;
   overflow: hidden;
   box-shadow: var(--shadow-md);
   width: 100vw;

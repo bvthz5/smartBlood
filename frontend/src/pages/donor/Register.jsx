@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { registerDonor, verifyOtp } from "../../api";
+import { registerDonor, verifyOtp } from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import '../../styles/donor-auth.css'
 
@@ -40,7 +40,15 @@ export default function Register() {
         <div className="auth-card auth-animate">
           <h2 className="text-lg font-semibold mb-3">Enter OTP</h2>
           <form onSubmit={confirmOtp}>
-            <input className="" placeholder="OTP" value={otp} onChange={e=>setOtp(e.target.value)} />
+            <input 
+              className="" 
+              placeholder="OTP" 
+              value={otp} 
+              onChange={e=>setOtp(e.target.value)}
+              autoComplete="one-time-code"
+              type="text"
+              inputMode="numeric"
+            />
             <button className="btn btn--primary" style={{marginTop:12}}>Verify</button>
           </form>
         </div>
@@ -53,11 +61,53 @@ export default function Register() {
       <div className="auth-card auth-animate">
         <h2 className="text-lg font-semibold mb-3">Donor Register</h2>
         <form onSubmit={submit}>
-          <div className="form-row"><input className="" placeholder="Name" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} /></div>
-          <div className="form-row"><input className="" placeholder="Phone" value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})} /></div>
-          <div className="form-row"><input className="" placeholder="Email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} /></div>
-          <div className="form-row"><input className="" placeholder="Blood group (e.g. B+)" value={form.blood_group} onChange={e=>setForm({...form,blood_group:e.target.value})} /></div>
-          <div className="form-row"><input type="password" className="" placeholder="Password" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} /></div>
+          <div className="form-row">
+            <input 
+              className="" 
+              placeholder="Name" 
+              value={form.name} 
+              onChange={e=>setForm({...form,name:e.target.value})}
+              autoComplete="name"
+            />
+          </div>
+          <div className="form-row">
+            <input 
+              className="" 
+              placeholder="Phone" 
+              value={form.phone} 
+              onChange={e=>setForm({...form,phone:e.target.value})}
+              autoComplete="tel"
+              type="tel"
+            />
+          </div>
+          <div className="form-row">
+            <input 
+              className="" 
+              placeholder="Email" 
+              value={form.email} 
+              onChange={e=>setForm({...form,email:e.target.value})}
+              autoComplete="email"
+              type="email"
+            />
+          </div>
+          <div className="form-row">
+            <input 
+              className="" 
+              placeholder="Blood group (e.g. B+)" 
+              value={form.blood_group} 
+              onChange={e=>setForm({...form,blood_group:e.target.value})}
+            />
+          </div>
+          <div className="form-row">
+            <input 
+              type="password" 
+              className="" 
+              placeholder="Password" 
+              value={form.password} 
+              onChange={e=>setForm({...form,password:e.target.value})}
+              autoComplete="new-password"
+            />
+          </div>
           <button className="btn btn--primary">Register</button>
         </form>
       </div>
