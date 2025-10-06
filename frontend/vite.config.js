@@ -1,9 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    tailwindcss(),
+  ],
   server: {
     port: 3000,
     host: true,
@@ -17,6 +21,18 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          redux: ['@reduxjs/toolkit', 'react-redux'],
+          ui: ['framer-motion', 'lucide-react'],
+          charts: ['chart.js', 'react-chartjs-2']
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000
   }
 })

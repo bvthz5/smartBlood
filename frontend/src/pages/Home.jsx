@@ -8,6 +8,7 @@ import SectionReveal from '../components/SectionReveal'
 import AlertsBar from '../components/AlertsBar'
 import '../styles/home-new.css'
 
+
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger)
 
