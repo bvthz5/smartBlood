@@ -1,0 +1,172 @@
+/* Performance Optimizations - Reduce Forced Reflows */
+
+/* Use transform instead of changing layout properties */
+.performance-optimized {
+  will-change: transform;
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+/* Optimize animations to use transform and opacity */
+@keyframes fadeInOptimized {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInOptimized {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Use CSS containment for better performance */
+.contain-layout {
+  contain: layout;
+}
+
+.contain-paint {
+  contain: paint;
+}
+
+.contain-strict {
+  contain: strict;
+}
+
+/* Optimize scrolling performance */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Reduce paint operations */
+.no-paint {
+  will-change: auto;
+}
+
+/* Optimize text rendering */
+.optimize-text {
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reduce layout thrashing */
+.stable-layout {
+  position: relative;
+  contain: layout style;
+}
+
+/* Optimize images */
+.optimize-images {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Reduce reflows on resize */
+.responsive-container {
+  contain: layout;
+  min-height: 0;
+}
+
+/* Optimize flexbox performance */
+.flex-optimized {
+  display: flex;
+  contain: layout;
+}
+
+/* Optimize grid performance */
+.grid-optimized {
+  display: grid;
+  contain: layout;
+}
+
+/* Reduce composite layers */
+.composite-optimized {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Optimize transitions */
+.transition-optimized {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  will-change: transform, opacity;
+}
+
+/* Reduce paint complexity */
+.simple-paint {
+  background: solid colors only;
+  border: solid colors only;
+  box-shadow: none;
+}
+
+/* Optimize for 60fps animations */
+.sixty-fps {
+  animation-duration: 16.67ms; /* 60fps */
+  animation-timing-function: linear;
+}
+
+/* Reduce memory usage */
+.memory-optimized {
+  contain: layout style paint;
+  isolation: isolate;
+}
+
+/* Optimize for mobile performance */
+.mobile-optimized {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Reduce layout calculations */
+.layout-cached {
+  contain: layout;
+  position: relative;
+}
+
+/* Optimize hover states */
+.hover-optimized {
+  transition: transform 0.2s ease;
+}
+
+.hover-optimized:hover {
+  transform: translateY(-2px);
+}
+
+/* Reduce DOM complexity */
+.simple-dom {
+  contain: strict;
+  isolation: isolate;
+}
+
+/* Optimize for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .motion-optimized {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Performance monitoring classes */
+.performance-monitor {
+  contain: layout style paint;
+  will-change: auto;
+}
+
+/* Optimize for high DPI displays */
+.high-dpi-optimized {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}

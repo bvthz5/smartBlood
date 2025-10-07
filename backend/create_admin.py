@@ -42,9 +42,8 @@ def create_admin():
         db.session.add(admin_user)
         db.session.commit()
         
-        print(f"Admin user created successfully!")
-        print(f"Email: {admin_email}")
-        print(f"Password: {admin_password}")
+        print("Admin user created successfully!")
+        print("Credentials saved to database")
 
 if __name__ == "__main__":
     create_admin()

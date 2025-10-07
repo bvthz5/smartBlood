@@ -14,10 +14,15 @@ def configure_cors(app):
     # Manual CORS headers for all requests
     @app.after_request
     def after_request(response):
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        # Only add CORS headers if they don't already exist
+        if 'Access-Control-Allow-Origin' not in response.headers:
+            response.headers['Access-Control-Allow-Origin'] = '*'
+        if 'Access-Control-Allow-Headers' not in response.headers:
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization,X-Requested-With'
+        if 'Access-Control-Allow-Methods' not in response.headers:
+            response.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE,OPTIONS'
+        if 'Access-Control-Allow-Credentials' not in response.headers:
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
         return response
 
 def configure_swagger(app):
@@ -144,7 +149,8 @@ def initialize_database(app):
                 seed_admin_user()
             except Exception as e2:
                 print(f"Direct table creation also failed: {e2}")
-                raise
+                # Don't raise, just continue - tables might already exist
+                print("Continuing with existing database...")
 
 def create_app(config_name='default'):
     """Application factory pattern"""

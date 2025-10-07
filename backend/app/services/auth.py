@@ -14,7 +14,7 @@ def seed_admin_user():
     admin_password = os.getenv('ADMIN_PASSWORD')
     
     if not admin_email or not admin_password:
-        print("Warning: ADMIN_EMAIL or ADMIN_PASSWORD missing in env. Skipping admin seed.")
+        print("Warning: Admin credentials missing in environment. Skipping admin seed.")
         return False
     
     existing_admin = User.query.filter_by(email=admin_email, role='admin').first()
@@ -37,14 +37,14 @@ def seed_admin_user():
         )
         db.session.add(admin_user)
         db.session.commit()
-        print(f"Admin seeded: {admin_user.email}")
+        print("Admin user created successfully")
         return True
     else:
-        print(f"Admin user already exists: {existing_admin.email}")
+        print("Admin user already exists")
         return False
 
 def verify_password(password_hash, password):
-    """Verify password against hash"""
+    """Verify password against hash - prioritizes werkzeug for compatibility"""
     try:
         # Check if it's a werkzeug hash (starts with pbkdf2: or scrypt:)
         if password_hash.startswith(('pbkdf2:', 'scrypt:')):
@@ -56,13 +56,15 @@ def verify_password(password_hash, password):
                 password = password[:72]
             return bcrypt.verify(password, password_hash)
         else:
-            # SHA256 hash verification
+            # Legacy SHA256 hash verification
+            print("Warning: Using legacy SHA256 password hash. Consider migrating to werkzeug.")
             return hashlib.sha256(password.encode()).hexdigest() == password_hash
     except Exception as e:
         print(f"Password verification error: {str(e)}")
-        # Fallback to SHA256 hash verification
+        # Fallback to SHA256 hash verification for legacy compatibility
         return hashlib.sha256(password.encode()).hexdigest() == password_hash
 
 def hash_password(password):
-    """Hash password using SHA256"""
-    return hashlib.sha256(password.encode()).hexdigest()
+    """Hash password using werkzeug for compatibility"""
+    # Use werkzeug's secure password hashing
+    return generate_password_hash(password)

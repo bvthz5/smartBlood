@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import { store } from "./store";
 import { AuthProvider } from "./contexts/AuthContext";
+import { initializeAuth } from "./store/slices/adminSlice";
 import Nav from "./components/Nav";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
@@ -29,13 +30,25 @@ import CreateRequest from "./pages/seeker/SeekerRequest";
 
 // Admin pages
 import AdminLogin from "./pages/admin/AdminLogin";
+import AdminLoginFuturistic from "./pages/admin/AdminLoginFuturistic";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminDashboardSimple from "./pages/admin/AdminDashboardSimple";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminSettings from "./pages/admin/AdminSettings";
 
 // Admin Layout
 import AdminLayout from "./components/admin/AdminLayout";
+import AdminRouteGuard from "./components/AdminRouteGuard";
+
+// Component to initialize authentication
+function AuthInitializer({ children }) {
+  const dispatch = useDispatch();
+  
+  useEffect(() => {
+    dispatch(initializeAuth());
+  }, [dispatch]);
+  
+  return children;
+}
 
 function App() {
   // Memoize the layout sync function to prevent unnecessary re-renders
@@ -44,7 +57,7 @@ function App() {
     if (window.requestIdleCallback) {
       requestIdleCallback(() => {
         syncHeaderAlertHeights();
-      });
+      }, { timeout: 1000 });
     } else {
       // Fallback to requestAnimationFrame
       requestAnimationFrame(() => {
@@ -53,28 +66,41 @@ function App() {
     }
   }, []);
 
-  // Sync layout offsets on route changes (only once on mount)
+  // Sync layout offsets only once on mount to prevent performance issues
   React.useEffect(() => {
-    handleLayoutSync();
-  }, [handleLayoutSync]);
+    // Delay initial sync to avoid blocking initial render
+    const timeoutId = setTimeout(() => {
+      handleLayoutSync();
+    }, 100);
+    
+    return () => clearTimeout(timeoutId);
+  }, []); // Remove handleLayoutSync dependency to prevent re-runs
 
   return (
     <Provider store={store}>
       <AuthProvider>
-        <ScrollToTop />
-        <Routes>
-          {/* Admin Routes - No Nav, uses AdminLayout */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/*" element={
-            <AdminLayout>
-              <Routes>
-                <Route path="dashboard" element={<AdminDashboardSimple />} />
-                <Route path="users" element={<AdminUsers />} />
-                <Route path="settings" element={<AdminSettings />} />
-                <Route path="*" element={<AdminDashboardSimple />} />
-              </Routes>
-            </AdminLayout>
-          } />
+        <AuthInitializer>
+          <ScrollToTop />
+          <Routes>
+          {/* Admin Routes - Protected with Route Guard */}
+              <Route path="/admin/*" element={
+                <AdminRouteGuard>
+                  <Routes>
+                    <Route path="login" element={<AdminLoginFuturistic />} />
+                    <Route path="*" element={
+                      <AdminLayout>
+                        <Routes>
+                          <Route path="dashboard" element={<AdminDashboard />} />
+                          <Route path="users" element={<AdminUsers />} />
+                          <Route path="settings" element={<AdminSettings />} />
+                          <Route path="" element={<AdminDashboard />} />
+                          <Route path="*" element={<AdminDashboard />} />
+                        </Routes>
+                      </AdminLayout>
+                    } />
+                  </Routes>
+                </AdminRouteGuard>
+              } />
 
           {/* User Routes - With Nav */}
           <Route path="/*" element={
@@ -131,7 +157,8 @@ function App() {
               </main>
             </div>
           } />
-        </Routes>
+          </Routes>
+        </AuthInitializer>
       </AuthProvider>
     </Provider>
   );

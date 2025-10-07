@@ -11,22 +11,33 @@ export default function ForgotPassword(){
   async function sendOtp(e){
     e.preventDefault();
     try{
-      await api.post("/api/auth/forgot-password", { email_or_phone: ident });
-      alert("If account exists, OTP sent (dev logs).");
+      const response = await api.post("/api/auth/forgot-password", { email_or_phone: ident });
+      // Store user_id from response for later use
+      if (response.data.user_id) {
+        setUserId(response.data.user_id);
+      }
+      alert("If account exists, OTP has been sent to your registered phone number.");
       setStage(1);
-    }catch(err){ alert("Failed"); }
+    }catch(err){ 
+      alert(err?.response?.data?.error || "Failed to send OTP. Please try again."); 
+    }
   }
 
   async function reset(e){
     e.preventDefault();
     try{
-      // you need user_id (if your backend returned it). Here we prompt user to paste user_id or use other method.
-      // For simplicity we assume user provides user_id in ident field or OTP endpoint tells user; adjust as necessary.
-      const payload = { user_id: userId, otp, new_password: newPassword };
+      // Use the user_id from the forgot-password response
+      const payload = { 
+        user_id: userId, 
+        otp, 
+        new_password: newPassword 
+      };
       await api.post("/api/auth/reset-password", payload);
-      alert("Password reset. Please login.");
+      alert("Password reset successfully. Please login with your new password.");
       window.location.href = "/donor/login";
-    }catch(err){ alert(err?.response?.data?.error || "Failed"); }
+    }catch(err){ 
+      alert(err?.response?.data?.error || "Failed to reset password. Please try again."); 
+    }
   }
 
   if(stage===1){
@@ -34,13 +45,6 @@ export default function ForgotPassword(){
       <div className="max-w-md mx-auto bg-white p-6 shadow rounded">
         <h2 className="text-lg font-semibold mb-3">Reset Password</h2>
         <form onSubmit={reset}>
-          <input 
-            className="w-full border p-2 rounded mb-2" 
-            placeholder="User ID" 
-            value={userId||''} 
-            onChange={e=>setUserId(e.target.value)}
-            autoComplete="username"
-          />
           <input 
             className="w-full border p-2 rounded mb-2" 
             placeholder="OTP" 

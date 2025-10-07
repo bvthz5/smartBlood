@@ -1,59 +1,79 @@
 /**
  * Layout offset utility for dynamic header and alert bar heights
- * Ensures proper spacing between fixed elements and content
+ * Optimized to prevent forced reflows and improve performance
  */
 
 let lastHeaderHeight = 0;
 let lastAlertsHeight = 0;
 let isInitialized = false;
+let isUpdating = false;
 
 export function syncHeaderAlertHeights() {
+  // Prevent concurrent updates
+  if (isUpdating) return;
+  
   try {
-    // Use getBoundingClientRect() instead of offsetHeight to avoid forced reflow
-    const header = document.querySelector('.header--fixed, .header');
-    const alertsBar = document.querySelector('.alerts-bar');
+    isUpdating = true;
     
-    let headerHeight = 76; // Default fallback
-    let alertsHeight = 48; // Default fallback
+    // Use requestIdleCallback for better performance
+    const performSync = () => {
+      try {
+        const header = document.querySelector('.header--fixed, .header');
+        const alertsBar = document.querySelector('.alerts-bar');
+        
+        let headerHeight = 76; // Default fallback
+        let alertsHeight = 48; // Default fallback
+        
+        // Batch all DOM reads to prevent forced reflows
+        if (header) {
+          const rect = header.getBoundingClientRect();
+          headerHeight = Math.round(rect.height);
+        }
+        
+        if (alertsBar) {
+          const rect = alertsBar.getBoundingClientRect();
+          alertsHeight = Math.round(rect.height);
+        }
+        
+        // Only update if heights have changed or it's the first run
+        if (!isInitialized || headerHeight !== lastHeaderHeight || alertsHeight !== lastAlertsHeight) {
+          const root = document.documentElement;
+          const combinedHeight = headerHeight + alertsHeight;
+          
+          // Use CSS custom properties in a single batch to prevent forced reflow
+          const newStyles = {
+            '--header-height': `${headerHeight}px`,
+            '--alerts-height': `${alertsHeight}px`,
+            '--combined-offset': `${combinedHeight}px`
+          };
+          
+          // Apply all styles at once
+          Object.assign(root.style, newStyles);
+          
+          lastHeaderHeight = headerHeight;
+          lastAlertsHeight = alertsHeight;
+          isInitialized = true;
+        }
+        
+        isUpdating = false;
+        
+      } catch (error) {
+        console.warn('Layout offset sync failed:', error);
+        isUpdating = false;
+      }
+    };
     
-    if (header) {
-      // Use getBoundingClientRect for better performance
-      const rect = header.getBoundingClientRect();
-      headerHeight = Math.round(rect.height);
-    }
-    
-    if (alertsBar) {
-      const rect = alertsBar.getBoundingClientRect();
-      alertsHeight = Math.round(rect.height);
-    }
-    
-    // Only update if heights have changed or it's the first run
-    if (!isInitialized || headerHeight !== lastHeaderHeight || alertsHeight !== lastAlertsHeight) {
-      // Batch DOM updates to prevent multiple reflows
-      const root = document.documentElement;
-      const combinedHeight = headerHeight + alertsHeight;
-      
-      // Use CSS custom properties in a single batch
-      root.style.cssText += `
-        --header-height: ${headerHeight}px;
-        --alerts-height: ${alertsHeight}px;
-        --combined-offset: ${combinedHeight}px;
-      `;
-      
-      lastHeaderHeight = headerHeight;
-      lastAlertsHeight = alertsHeight;
-      isInitialized = true;
+    // Use requestIdleCallback for better performance
+    if (window.requestIdleCallback) {
+      requestIdleCallback(performSync, { timeout: 100 });
+    } else {
+      // Fallback to requestAnimationFrame
+      requestAnimationFrame(performSync);
     }
     
   } catch (error) {
     console.warn('Layout offset sync failed:', error);
-    // Fallback values
-    const root = document.documentElement;
-    root.style.cssText += `
-      --header-height: 76px;
-      --alerts-height: 48px;
-      --combined-offset: 124px;
-    `;
+    isUpdating = false;
   }
 }
 

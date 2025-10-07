@@ -43,8 +43,11 @@ def register():
     db.session.add(otp_sess)
     db.session.commit()
 
-    # log OTP to console for dev
-    logger.info(f"DEV OTP for {phone}: {otp}")
+    # Only log OTP in development environment for debugging
+    if current_app.config.get('DEBUG', False):
+        logger.info(f"DEV OTP for {phone}: {otp}")
+    else:
+        logger.info(f"OTP sent to {phone}")
 
     return jsonify({"user_id": user.id, "pending_otp": True, "masked_phone": (phone[:-4].replace(phone[:-4], "*"*max(0, len(phone[:-4]))) + phone[-4:])}), 201
 

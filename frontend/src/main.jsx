@@ -19,10 +19,17 @@ if (process.env.NODE_ENV === 'development') {
   };
 }
 
-// Use requestIdleCallback for better performance
+// Optimized rendering to reduce message handler overhead
 const renderApp = () => {
-  const root = createRoot(document.getElementById("root"));
+  const rootElement = document.getElementById("root");
+  if (!rootElement) {
+    console.error("Root element not found");
+    return;
+  }
   
+  const root = createRoot(rootElement);
+  
+  // Use React 18's concurrent features for better performance
   root.render(
     <React.StrictMode>
       <BrowserRouter
@@ -37,10 +44,20 @@ const renderApp = () => {
   );
 };
 
-// Render immediately or when idle
-if (window.requestIdleCallback) {
-  requestIdleCallback(renderApp, { timeout: 2000 });
+// Optimized rendering strategy
+const initializeApp = () => {
+  // Use requestIdleCallback with shorter timeout to reduce message handler time
+  if (window.requestIdleCallback) {
+    requestIdleCallback(renderApp, { timeout: 500 });
+  } else {
+    // Use requestAnimationFrame for better performance
+    requestAnimationFrame(renderApp);
+  }
+};
+
+// Initialize app when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
-  // Fallback for browsers without requestIdleCallback
-  setTimeout(renderApp, 0);
+  initializeApp();
 }

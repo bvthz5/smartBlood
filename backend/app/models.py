@@ -33,20 +33,20 @@ class Donor(db.Model):
     __tablename__ = "donors"
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    password_hash = db.Column(db.Text, nullable=False)
-    name = db.Column(db.String(255), nullable=False)
-    phone = db.Column(db.String(20))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
     date_of_birth = db.Column(db.Date)
     blood_group = db.Column(db.String(5), nullable=False)
-    district = db.Column(db.String(100))
-    city = db.Column(db.String(100))
+    gender = db.Column(db.String(20))
     is_available = db.Column(db.Boolean, default=True)
-    status = db.Column(db.String(20), default='active')
     last_donation_date = db.Column(db.Date)
+    reliability_score = db.Column(db.Float, default=0)
+    location_lat = db.Column(db.Numeric(9,6))
+    location_lng = db.Column(db.Numeric(9,6))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    # Relationships
+    user = db.relationship("User", backref="donor")
     matches = db.relationship("Match", back_populates="donor")
 
 
@@ -106,8 +106,8 @@ class Match(db.Model):
     __tablename__ = "matches"
 
     id = db.Column(db.Integer, primary_key=True)
-    request_id = db.Column(db.Integer, db.ForeignKey("blood_requests.id"))
-    donor_id = db.Column(db.Integer, db.ForeignKey("donors.id"))
+    request_id = db.Column(db.Integer, db.ForeignKey("blood_requests.id", ondelete="CASCADE"))
+    donor_id = db.Column(db.Integer, db.ForeignKey("donors.id", ondelete="CASCADE"))
     status = db.Column(db.String(50), default="pending")
     matched_at = db.Column(db.DateTime, default=datetime.utcnow)
     confirmed_at = db.Column(db.DateTime)
@@ -122,11 +122,26 @@ class DonationHistory(db.Model):
     __tablename__ = "donation_history"
 
     id = db.Column(db.Integer, primary_key=True)
-    donor_id = db.Column(db.Integer, db.ForeignKey("donors.id"))
-    request_id = db.Column(db.Integer, db.ForeignKey("blood_requests.id"))
-    hospital_id = db.Column(db.Integer, db.ForeignKey("hospitals.id"))
+    donor_id = db.Column(db.Integer, db.ForeignKey("donors.id", ondelete="CASCADE"))
+    request_id = db.Column(db.Integer, db.ForeignKey("blood_requests.id", ondelete="CASCADE"))
+    hospital_id = db.Column(db.Integer, db.ForeignKey("hospitals.id", ondelete="CASCADE"))
     units = db.Column(db.Integer, nullable=False)
     donation_date = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class RefreshToken(db.Model):
+    __tablename__ = "refresh_tokens"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    token = db.Column(db.Text, nullable=False, unique=True)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    revoked = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    revoked_at = db.Column(db.DateTime)
+
+    # Relationships
+    user = db.relationship("User", backref="refresh_tokens")
 
 
 class OTPSession(db.Model):

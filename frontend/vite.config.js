@@ -1,38 +1,17 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
 
-// https://vitejs.dev/config/
+// Local development configuration
 export default defineConfig({
   plugins: [
-    react({
-      // Optimize React plugin for better performance
-      fastRefresh: true,
-      babel: {
-        plugins: [
-          // Add babel plugins for better performance
-          ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }]
-        ]
-      }
-    }),
-    tailwindcss(),
+    react(),
   ],
   server: {
     port: 3000,
-    host: true,
-    hmr: {
-      // Optimize HMR settings
-      overlay: false, // Disable error overlay to reduce reflows
-      clientPort: 3000,
-    },
-    watch: {
-      // Optimize file watching
-      usePolling: false,
-      interval: 1000,
-    },
+    host: '127.0.0.1', // localhost only
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://127.0.0.1:5000',
         changeOrigin: true,
         secure: false,
       }
@@ -40,18 +19,6 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          redux: ['@reduxjs/toolkit', 'react-redux'],
-          ui: ['framer-motion', 'lucide-react'],
-          charts: ['chart.js', 'react-chartjs-2']
-        }
-      }
-    },
-    chunkSizeWarningLimit: 1000
+    sourcemap: false, // Disable sourcemaps for simpler builds
   }
 })
