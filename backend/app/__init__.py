@@ -1,7 +1,7 @@
 import os
 import sys
 from flask import Flask, jsonify
-from flask_cors import CORS
+# from flask_cors import CORS  # Removed - using manual CORS headers
 from dotenv import load_dotenv
 from flasgger import Swagger
 from .config import config
@@ -11,16 +11,14 @@ from .services.auth import seed_admin_user
 
 def configure_cors(app):
     """Configure CORS for cross-origin requests"""
-    CORS(app, 
-         origins=[
-             "http://localhost:3000",  # React development server
-             "http://127.0.0.1:3000",  # Alternative localhost
-             "http://localhost:5173",  # Vite development server
-             "http://127.0.0.1:5173",  # Alternative Vite localhost
-         ],
-         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-         allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
-         supports_credentials=True)
+    # Manual CORS headers for all requests
+    @app.after_request
+    def after_request(response):
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
 
 def configure_swagger(app):
     """Configure Swagger UI for API documentation"""
@@ -113,21 +111,40 @@ def register_blueprints(app):
     app.register_blueprint(health_bp)
 
 def initialize_database(app):
-    """Initialize database and seed admin user"""
+    """Initialize database and create tables if they don't exist"""
     with app.app_context():
         try:
-            # Run database migrations
-            from flask_migrate import upgrade
-            print("Running database migrations...")
-            upgrade()
-            print("Database migrations completed successfully")
+            # Check if tables exist
+            from sqlalchemy import inspect
+            inspector = inspect(db.engine)
+            existing_tables = inspector.get_table_names()
+            
+            if not existing_tables:
+                print("No tables found. Creating database tables...")
+                # Create all tables
+                db.create_all()
+                print("Database tables created successfully")
+            else:
+                print(f"Database tables already exist: {len(existing_tables)} tables found")
             
             # Seed admin user
+            from app.services.auth import seed_admin_user
             seed_admin_user()
                 
         except Exception as e:
             print(f"Database initialization error: {e}")
-            raise
+            # Try to create tables directly if migrations fail
+            try:
+                print("Attempting to create tables directly...")
+                db.create_all()
+                print("Database tables created successfully")
+                
+                # Seed admin user
+                from app.services.auth import seed_admin_user
+                seed_admin_user()
+            except Exception as e2:
+                print(f"Direct table creation also failed: {e2}")
+                raise
 
 def create_app(config_name='default'):
     """Application factory pattern"""
@@ -156,9 +173,9 @@ def create_app(config_name='default'):
         if not check_database_connection():
             print("Failed to connect to database. Please check your DATABASE_URL and ensure PostgreSQL is running.")
             sys.exit(1)
-
-    # Database initialization is handled by migrate_db.py script
-    # initialize_database(app)
+        
+        # Initialize database and create tables if they don't exist
+        initialize_database(app)
 
     # Register main routes
     @app.route("/")

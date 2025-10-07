@@ -6,7 +6,7 @@ A comprehensive blood donation platform connecting donors with seekers through a
 
 SmartBlood is a full-stack web application that facilitates blood donation by connecting donors with people in need. The system includes donor registration, blood request management, intelligent matching algorithms, and admin dashboard for system management.
 
-## 🏗️ Architecture
+## Architecture
 
 - **Backend**: Flask (Python) with PostgreSQL database
 - **Frontend**: React 19 with Vite build system
@@ -14,7 +14,7 @@ SmartBlood is a full-stack web application that facilitates blood donation by co
 - **Authentication**: JWT-based authentication
 - **API**: RESTful API design
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -131,7 +131,7 @@ smartBlood/
 - **Seekers**: Create blood requests, track matches
 - **Admin**: System management, user oversight, analytics
 
-## 🗄️ Database Schema
+## Database Schema
 
 ### Core Tables
 - `users` - User accounts and authentication
@@ -143,7 +143,7 @@ smartBlood/
 - `refresh_tokens` - JWT refresh token management
 - `admin_audit_logs` - Admin action logging
 
-## 🔐 Authentication
+## Authentication
 
 The system uses JWT tokens for authentication:
 - Access tokens (15 minutes expiry)
@@ -151,7 +151,7 @@ The system uses JWT tokens for authentication:
 - Secure password hashing with bcrypt
 - OTP verification for account setup
 
-## 🛠️ API Endpoints
+## API Endpoints
 
 ### Authentication
 - `POST /auth/login` - User login
@@ -174,7 +174,7 @@ The system uses JWT tokens for authentication:
 - `GET /admin/requests` - List all requests
 - `POST /admin/match` - Create donor matches
 
-## 🚀 Deployment
+## Deployment
 
 ### Backend Deployment
 1. Set production environment variables

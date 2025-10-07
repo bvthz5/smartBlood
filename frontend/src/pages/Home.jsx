@@ -355,7 +355,7 @@ function AlertsCampsSection({ language }) {
           {alerts.map((alert, index) => (
             <div key={index} className={`alert-card ${alert.type}`}>
               <div className="alert-icon">
-                {alert.type === 'alert' ? '🚨' : '🏥'}
+                {alert.type === 'alert' ? 'Alert' : 'Hospital'}
               </div>
               <div className="alert-content">
                 <h3>{alert.title}</h3>

@@ -101,7 +101,7 @@ export default function Contact() {
 
   const contactInfo = language === 'en' ? [
     {
-      icon: '📍',
+      icon: 'MapPin',
       title: 'Office Address',
       details: [
         'SmartBlood Connect Headquarters',
@@ -119,7 +119,7 @@ export default function Contact() {
       ]
     },
     {
-      icon: '✉️',
+      icon: 'Email',
       title: 'Email Addresses',
       details: [
         'support@smartbloodconnect.com',
@@ -138,7 +138,7 @@ export default function Contact() {
     }
   ] : [
     {
-      icon: '📍',
+      icon: 'MapPin',
       title: 'ഓഫീസ് വിലാസം',
       details: [
         'സ്മാർട്ട് ബ്ലഡ് കണക്ട് ആസ്ഥാനം',
@@ -156,7 +156,7 @@ export default function Contact() {
       ]
     },
     {
-      icon: '✉️',
+      icon: 'Email',
       title: 'ഇമെയിൽ വിലാസങ്ങൾ',
       details: [
         'support@smartbloodconnect.com',
@@ -354,7 +354,7 @@ export default function Contact() {
               {submitStatus && (
                 <div className={`submit-status ${submitStatus}`}>
                   <div className="status-icon">
-                    {submitStatus === 'success' ? '✅' : '❌'}
+                    {submitStatus === 'success' ? 'Success' : 'Error'}
                   </div>
                   <div className="status-message">
                     {submitStatus === 'success' 

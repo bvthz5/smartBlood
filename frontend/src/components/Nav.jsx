@@ -148,14 +148,14 @@ export default function Nav() {
                 onClick={toggleDarkMode}
                 aria-label="Toggle dark mode"
               >
-                {darkMode ? '☀️' : '🌙'}
+                {darkMode ? 'Sun' : 'Moon'}
               </button>
               <button 
                 className="header__toggle-btn header__toggle-btn--language" 
                 onClick={toggleLanguage}
                 aria-label="Toggle language"
               >
-                {language === 'en' ? '🌐 English' : '🌐 മലയാളം'}
+                {language === 'en' ? 'English' : 'മലയാളം'}
               </button>
             </div>
             <div className={`header__dropdown ${loginDropdownOpen ? 'open' : ''}`}>
@@ -280,14 +280,14 @@ export default function Nav() {
               onClick={toggleDarkMode}
               aria-label="Toggle dark mode"
             >
-              {darkMode ? '☀️' : '🌙'}
+              {darkMode ? 'Sun' : 'Moon'}
             </button>
             <button 
               className="header__toggle-btn header__toggle-btn--language" 
               onClick={toggleLanguage}
               aria-label="Toggle language"
             >
-              {language === 'en' ? '🌐 English' : '🌐 മലയാളം'}
+              {language === 'en' ? 'English' : 'മലയാളം'}
             </button>
           </div>
           <div className={`header__dropdown ${loginDropdownOpen ? 'open' : ''}`}>

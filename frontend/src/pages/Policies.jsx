@@ -72,17 +72,17 @@ export default function Policies() {
   }, [activeSection]);
 
   const sections = language === 'en' ? [
-    { id: 'privacy', title: 'Privacy Policy', icon: '🔒' },
-    { id: 'terms', title: 'Terms of Service', icon: '📋' },
-    { id: 'data', title: 'Data Protection', icon: '🛡️' },
-    { id: 'medical', title: 'Medical Guidelines', icon: '🏥' },
-    { id: 'donor', title: 'Donor Rights', icon: '❤️' }
+    { id: 'privacy', title: 'Privacy Policy', icon: 'Lock' },
+    { id: 'terms', title: 'Terms of Service', icon: 'Document' },
+    { id: 'data', title: 'Data Protection', icon: 'Shield' },
+    { id: 'medical', title: 'Medical Guidelines', icon: 'Hospital' },
+    { id: 'donor', title: 'Donor Rights', icon: 'Heart' }
   ] : [
-    { id: 'privacy', title: 'സ്വകാര്യതാ നയം', icon: '🔒' },
-    { id: 'terms', title: 'സേവന നിബന്ധനകൾ', icon: '📋' },
-    { id: 'data', title: 'ഡാറ്റാ സംരക്ഷണം', icon: '🛡️' },
-    { id: 'medical', title: 'മെഡിക്കൽ മാർഗ്ഗനിർദ്ദേശങ്ങൾ', icon: '🏥' },
-    { id: 'donor', title: 'ദാനി അവകാശങ്ങൾ', icon: '❤️' }
+    { id: 'privacy', title: 'സ്വകാര്യതാ നയം', icon: 'Lock' },
+    { id: 'terms', title: 'സേവന നിബന്ധനകൾ', icon: 'Document' },
+    { id: 'data', title: 'ഡാറ്റാ സംരക്ഷണം', icon: 'Shield' },
+    { id: 'medical', title: 'മെഡിക്കൽ മാർഗ്ഗനിർദ്ദേശങ്ങൾ', icon: 'Hospital' },
+    { id: 'donor', title: 'ദാനി അവകാശങ്ങൾ', icon: 'Heart' }
   ];
 
   const policyContent = {

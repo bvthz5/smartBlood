@@ -52,7 +52,27 @@ const AdminLayout = ({ children }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isDarkMode, user } = useSelector((state) => state.admin);
+  const { isDarkMode, user, isAuthenticated } = useSelector((state) => state.admin);
+
+  // Check authentication on mount
+  useEffect(() => {
+    if (!isAuthenticated || !user) {
+      navigate("/admin/login");
+    }
+  }, [isAuthenticated, user, navigate]);
+
+  // Don't render layout if not authenticated
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full"
+        />
+      </div>
+    );
+  }
 
   // Mock notifications with real-time updates
   const [notifications] = useState([

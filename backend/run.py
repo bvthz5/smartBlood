@@ -25,12 +25,21 @@ if __name__ == "__main__":
     app = create_app()
     
     # Get host and port from environment or use defaults
-    host = os.environ.get("HOST", "127.0.0.1")
+    host = os.environ.get("HOST", "0.0.0.0")
     port = int(os.environ.get("PORT", 5000))
     debug = os.environ.get("FLASK_ENV") == "development"
     
-    print(f" Starting SmartBlood backend on {host}:{port}")
-    print(f"Database: PostgreSQL (smartblood)")
+    print(f"Starting SmartBlood backend on {host}:{port}")
+    
+    # Determine database type from URL
+    db_url = os.environ.get("DATABASE_URL", "")
+    if "postgresql" in db_url:
+        print("Database: PostgreSQL")
+    elif "sqlite" in db_url:
+        print("Database: SQLite")
+    else:
+        print("Database: Connected")
+    
     print(f"Debug mode: {debug}")
     
     app.run(host=host, port=port, debug=debug)

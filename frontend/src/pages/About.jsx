@@ -124,20 +124,20 @@ export default function About() {
   }, []);
 
   const stats = language === 'en' ? [
-    { number: "500+", label: "Lives Saved", icon: "❤️" },
-    { number: "50+", label: "Partner Hospitals", icon: "🏥" },
-    { number: "24/7", label: "Support Available", icon: "🕐" },
-    { number: "14", label: "Districts Covered", icon: "📍" }
+    { number: "500+", label: "Lives Saved", icon: "Heart" },
+    { number: "50+", label: "Partner Hospitals", icon: "Hospital" },
+    { number: "24/7", label: "Support Available", icon: "Clock" },
+    { number: "14", label: "Districts Covered", icon: "MapPin" }
   ] : [
-    { number: "500+", label: "ജീവിതങ്ങൾ രക്ഷിച്ചു", icon: "❤️" },
-    { number: "50+", label: "പങ്കാളി ആശുപത്രികൾ", icon: "🏥" },
-    { number: "24/7", label: "പിന്തുണ ലഭ്യം", icon: "🕐" },
-    { number: "14", label: "ജില്ലകൾ ഉൾപ്പെടുത്തി", icon: "📍" }
+    { number: "500+", label: "ജീവിതങ്ങൾ രക്ഷിച്ചു", icon: "Heart" },
+    { number: "50+", label: "പങ്കാളി ആശുപത്രികൾ", icon: "Hospital" },
+    { number: "24/7", label: "പിന്തുണ ലഭ്യം", icon: "Clock" },
+    { number: "14", label: "ജില്ലകൾ ഉൾപ്പെടുത്തി", icon: "MapPin" }
   ];
 
   const features = language === 'en' ? [
     {
-      icon: "⚡",
+      icon: "Zap",
       title: "Real-Time Matching",
       description: "Advanced algorithms instantly connect donors with patients in need, reducing response time from hours to minutes."
     },
@@ -152,7 +152,7 @@ export default function About() {
       description: "Seamless experience across all devices with push notifications for urgent blood requests in your area."
     },
     {
-      icon: "🏥",
+      icon: "Hospital",
       title: "Hospital Integration",
       description: "Direct integration with hospital systems for automated blood inventory management and request processing."
     },
@@ -162,13 +162,13 @@ export default function About() {
       description: "Comprehensive dashboards provide insights into donation patterns, demand forecasting, and system performance."
     },
     {
-      icon: "🌐",
+      icon: "Globe",
       title: "Multi-Language",
       description: "Supporting Malayalam and English to serve the diverse population of Kerala effectively."
     }
   ] : [
     {
-      icon: "⚡",
+      icon: "Zap",
       title: "റിയൽ-ടൈം മാച്ചിംഗ്",
       description: "ക്ഷണനെ സൂക്ഷിച്ച് ദാനികളെ രോഗികളുമായി ബന്ധിപ്പിക്കുന്ന മുമ്പോട്ടുള്ള അൽഗോരിതങ്ങൾ."
     },
@@ -183,7 +183,7 @@ export default function About() {
       description: "എല്ലാ ഉപകരണങ്ങളിലും മികച്ച അനുഭവം, അടിയന്തര രക്ത അഭ്യർത്ഥനകൾക്ക് പുഷ് അറിയിപ്പുകൾ."
     },
     {
-      icon: "🏥",
+      icon: "Hospital",
       title: "ആശുപത്രി സംയോജനം",
       description: "ആശുപത്രി സിസ്റ്റങ്ങളുമായി നേരിട്ടുള്ള സംയോജനം ഓട്ടോമാറ്റഡ് രക്ത ഇൻവെന്ററി മാനേജ്മെന്റിനായി."
     },
@@ -193,7 +193,7 @@ export default function About() {
       description: "സമഗ്ര ഡാഷ്ബോർഡുകൾ ദാന പാറ്റേണുകൾ, ഡിമാൻഡ് പ്രവചനം, സിസ്റ്റം പ്രകടനം എന്നിവയെക്കുറിച്ച് അന്തർദൃഷ്ടികൾ നൽകുന്നു."
     },
     {
-      icon: "🌐",
+      icon: "Globe",
       title: "ബഹുഭാഷാ",
       description: "കേരളത്തിന്റെ വൈവിധ്യമാർന്ന ജനസംഖ്യയെ ഫലപ്രദമായി സേവിക്കാൻ മലയാളം, ഇംഗ്ലീഷ് പിന്തുണ."
     }

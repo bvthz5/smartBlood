@@ -25,24 +25,28 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime)
 
-    donor = db.relationship("Donor", uselist=False, back_populates="user")
+    # donor = db.relationship("Donor", uselist=False, back_populates="user")  # Commented out - using separate models
     staff = db.relationship("HospitalStaff", uselist=False, back_populates="user", foreign_keys="[HospitalStaff.user_id]")
 
 
 class Donor(db.Model):
     __tablename__ = "donors"
 
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
-    blood_group = db.Column(db.String(5), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    password_hash = db.Column(db.Text, nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    phone = db.Column(db.String(20))
     date_of_birth = db.Column(db.Date)
-    gender = db.Column(db.String(20))
-    availability = db.Column(db.Boolean, default=True)
+    blood_group = db.Column(db.String(5), nullable=False)
+    district = db.Column(db.String(100))
+    city = db.Column(db.String(100))
+    is_available = db.Column(db.Boolean, default=True)
+    status = db.Column(db.String(20), default='active')
     last_donation_date = db.Column(db.Date)
-    reliability_score = db.Column(db.Float, default=0)
-    location_lat = db.Column(db.Numeric(9,6))
-    location_lng = db.Column(db.Numeric(9,6))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    user = db.relationship("User", back_populates="donor")
     matches = db.relationship("Match", back_populates="donor")
 
 
@@ -50,18 +54,16 @@ class Hospital(db.Model):
     __tablename__ = "hospitals"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    phone = db.Column(db.String(20))
     address = db.Column(db.Text)
-    city = db.Column(db.String(100))
     district = db.Column(db.String(100))
-    state = db.Column(db.String(50), default="Kerala")
-    pincode = db.Column(db.String(10))
-    latitude = db.Column(db.Numeric(9,6))
-    longitude = db.Column(db.Numeric(9,6))
-    created_by = db.Column(db.Integer, db.ForeignKey("users.id"))  # admin
+    city = db.Column(db.String(100))
+    license_number = db.Column(db.String(100), unique=True)
+    is_verified = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    staff = db.relationship("HospitalStaff", back_populates="hospital")
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     requests = db.relationship("Request", back_populates="hospital")
 
 
@@ -76,23 +78,25 @@ class HospitalStaff(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship("User", back_populates="staff", foreign_keys=[user_id])
-    hospital = db.relationship("Hospital", back_populates="staff")
+    # hospital = db.relationship("Hospital", back_populates="staff")  # Commented out - no staff relationship in Hospital
 
 
 class Request(db.Model):
-    __tablename__ = "requests"
+    __tablename__ = "blood_requests"
 
     id = db.Column(db.Integer, primary_key=True)
-    hospital_id = db.Column(db.Integer, db.ForeignKey("hospitals.id", ondelete="CASCADE"))
-    created_by = db.Column(db.Integer, db.ForeignKey("hospital_staff.id"))
+    hospital_id = db.Column(db.Integer, db.ForeignKey("hospitals.id"))
+    patient_name = db.Column(db.String(255), nullable=False)
     blood_group = db.Column(db.String(5), nullable=False)
-    units = db.Column(db.Integer, nullable=False)
-    urgency = db.Column(db.String(20), nullable=False)  # emergency, urgent, scheduled
-    status = db.Column(db.String(20), default="pending")  # pending, active, matched, completed, cancelled
-    location_lat = db.Column(db.Numeric(9,6))
-    location_lng = db.Column(db.Numeric(9,6))
+    units_required = db.Column(db.Integer, nullable=False)
+    urgency = db.Column(db.String(20), default='medium')
+    status = db.Column(db.String(20), default='pending')
+    description = db.Column(db.Text)
+    contact_person = db.Column(db.String(255))
+    contact_phone = db.Column(db.String(20))
+    required_by = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     hospital = db.relationship("Hospital", back_populates="requests")
     matches = db.relationship("Match", back_populates="request")
@@ -102,12 +106,13 @@ class Match(db.Model):
     __tablename__ = "matches"
 
     id = db.Column(db.Integer, primary_key=True)
-    request_id = db.Column(db.Integer, db.ForeignKey("requests.id", ondelete="CASCADE"))
-    donor_id = db.Column(db.Integer, db.ForeignKey("donors.user_id", ondelete="CASCADE"))
-    match_score = db.Column(db.Float)
-    status = db.Column(db.String(20), default="notified")  # notified, accepted, declined, expired
-    notified_at = db.Column(db.DateTime)
-    responded_at = db.Column(db.DateTime)
+    request_id = db.Column(db.Integer, db.ForeignKey("blood_requests.id"))
+    donor_id = db.Column(db.Integer, db.ForeignKey("donors.id"))
+    status = db.Column(db.String(50), default="pending")
+    matched_at = db.Column(db.DateTime, default=datetime.utcnow)
+    confirmed_at = db.Column(db.DateTime)
+    completed_at = db.Column(db.DateTime)
+    notes = db.Column(db.Text)
 
     request = db.relationship("Request", back_populates="matches")
     donor = db.relationship("Donor", back_populates="matches")
@@ -117,8 +122,8 @@ class DonationHistory(db.Model):
     __tablename__ = "donation_history"
 
     id = db.Column(db.Integer, primary_key=True)
-    donor_id = db.Column(db.Integer, db.ForeignKey("donors.user_id"))
-    request_id = db.Column(db.Integer, db.ForeignKey("requests.id"))
+    donor_id = db.Column(db.Integer, db.ForeignKey("donors.id"))
+    request_id = db.Column(db.Integer, db.ForeignKey("blood_requests.id"))
     hospital_id = db.Column(db.Integer, db.ForeignKey("hospitals.id"))
     units = db.Column(db.Integer, nullable=False)
     donation_date = db.Column(db.DateTime, default=datetime.utcnow)

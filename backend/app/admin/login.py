@@ -10,6 +10,16 @@ from datetime import timedelta
 
 admin_auth_bp = Blueprint("admin_auth", __name__, url_prefix="/admin/auth")
 
+@admin_auth_bp.route("/login", methods=["OPTIONS"])
+def admin_login_options():
+    """Handle CORS preflight requests"""
+    response = jsonify({})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With')
+    response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response
+
 @admin_auth_bp.route("/login", methods=["POST"])
 def admin_login():
     """
@@ -125,9 +135,9 @@ def admin_login():
             additional_claims={"role": "admin"}
         )
         
-        # Update last login
-        admin_user.last_login = db.func.now()
-        db.session.commit()
+        # Update last login (Admin model doesn't have last_login field)
+        # admin_user.last_login = db.func.now()
+        # db.session.commit()
         
         return jsonify({
             "message": "Login successful",

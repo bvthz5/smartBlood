@@ -3,7 +3,7 @@ Simple Admin Dashboard Routes
 """
 from flask import Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.models import User
+from app.models import User, Donor, Hospital, Request
 from app.extensions import db
 
 admin_dashboard_bp = Blueprint("admin_dashboard", __name__, url_prefix="/admin/dashboard")
@@ -162,9 +162,9 @@ def get_dashboard_data():
             return jsonify({"error": "Unauthorized"}), 401
         
         # Get basic statistics
-        total_donors = User.query.filter_by(role="donor").count()
-        active_donors = User.query.filter_by(role="donor", status="active").count()
-        total_hospitals = User.query.filter_by(role="hospital").count()
+        total_donors = Donor.query.count()
+        active_donors = Donor.query.filter_by(is_available=True).count()
+        total_hospitals = Hospital.query.count()
         
         # Return mock data for now
         dashboard_data = {

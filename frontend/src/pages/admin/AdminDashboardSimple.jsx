@@ -29,10 +29,12 @@ const AdminDashboardSimple = () => {
     }
   }, [isAuthenticated, user, navigate]);
 
-  // Fetch dashboard data on mount
+  // Fetch dashboard data on mount (only if authenticated)
   useEffect(() => {
-    dispatch(fetchDashboardData());
-  }, [dispatch]);
+    if (isAuthenticated && user) {
+      dispatch(fetchDashboardData());
+    }
+  }, [dispatch, isAuthenticated, user]);
 
   if (isLoading && !dashboardData.stats.totalDonors) {
     return (
