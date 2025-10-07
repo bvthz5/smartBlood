@@ -11,15 +11,36 @@ import './styles/global.css';
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
 
-createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <BrowserRouter
-      future={{
-        v7_startTransition: true,
-        v7_relativeSplatPath: true
-      }}
-    >
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
-);
+// Performance optimizations
+if (process.env.NODE_ENV === 'development') {
+  // Disable React DevTools in development to reduce overhead
+  window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
+    isDisabled: true,
+  };
+}
+
+// Use requestIdleCallback for better performance
+const renderApp = () => {
+  const root = createRoot(document.getElementById("root"));
+  
+  root.render(
+    <React.StrictMode>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true
+        }}
+      >
+        <App />
+      </BrowserRouter>
+    </React.StrictMode>
+  );
+};
+
+// Render immediately or when idle
+if (window.requestIdleCallback) {
+  requestIdleCallback(renderApp, { timeout: 2000 });
+} else {
+  // Fallback for browsers without requestIdleCallback
+  setTimeout(renderApp, 0);
+}

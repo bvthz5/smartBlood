@@ -9,6 +9,7 @@ let isInitialized = false;
 
 export function syncHeaderAlertHeights() {
   try {
+    // Use getBoundingClientRect() instead of offsetHeight to avoid forced reflow
     const header = document.querySelector('.header--fixed, .header');
     const alertsBar = document.querySelector('.alerts-bar');
     
@@ -16,21 +17,28 @@ export function syncHeaderAlertHeights() {
     let alertsHeight = 48; // Default fallback
     
     if (header) {
-      headerHeight = header.offsetHeight;
+      // Use getBoundingClientRect for better performance
+      const rect = header.getBoundingClientRect();
+      headerHeight = Math.round(rect.height);
     }
     
     if (alertsBar) {
-      alertsHeight = alertsBar.offsetHeight;
+      const rect = alertsBar.getBoundingClientRect();
+      alertsHeight = Math.round(rect.height);
     }
     
     // Only update if heights have changed or it's the first run
     if (!isInitialized || headerHeight !== lastHeaderHeight || alertsHeight !== lastAlertsHeight) {
-      document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
-      document.documentElement.style.setProperty('--alerts-height', `${alertsHeight}px`);
-      
-      // Set combined offset for hero sections
+      // Batch DOM updates to prevent multiple reflows
+      const root = document.documentElement;
       const combinedHeight = headerHeight + alertsHeight;
-      document.documentElement.style.setProperty('--combined-offset', `${combinedHeight}px`);
+      
+      // Use CSS custom properties in a single batch
+      root.style.cssText += `
+        --header-height: ${headerHeight}px;
+        --alerts-height: ${alertsHeight}px;
+        --combined-offset: ${combinedHeight}px;
+      `;
       
       lastHeaderHeight = headerHeight;
       lastAlertsHeight = alertsHeight;
@@ -40,17 +48,29 @@ export function syncHeaderAlertHeights() {
   } catch (error) {
     console.warn('Layout offset sync failed:', error);
     // Fallback values
-    document.documentElement.style.setProperty('--header-height', '76px');
-    document.documentElement.style.setProperty('--alerts-height', '48px');
-    document.documentElement.style.setProperty('--combined-offset', '124px');
+    const root = document.documentElement;
+    root.style.cssText += `
+      --header-height: 76px;
+      --alerts-height: 48px;
+      --combined-offset: 124px;
+    `;
   }
 }
 
-// Debounced resize handler
+// Debounced resize handler with better performance
 let resizeTimeout;
+let isResizing = false;
+
 function debouncedSync() {
+  if (isResizing) return; // Prevent multiple calls during resize
+  
+  isResizing = true;
   clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(syncHeaderAlertHeights, 100);
+  
+  resizeTimeout = setTimeout(() => {
+    syncHeaderAlertHeights();
+    isResizing = false;
+  }, 150); // Increased debounce time for better performance
 }
 
 // Initialize on DOM ready

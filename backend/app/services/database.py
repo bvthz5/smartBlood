@@ -19,7 +19,7 @@ def check_database_connection():
         except Exception:
             masked_url = db_url
         
-        print(f"Connecting to database: {masked_url}")
+        print("Connecting to database...")
         
         engine = create_engine(
             db_url,

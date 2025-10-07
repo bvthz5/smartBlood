@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./store";
@@ -38,13 +38,25 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import AdminLayout from "./components/admin/AdminLayout";
 
 function App() {
+  // Memoize the layout sync function to prevent unnecessary re-renders
+  const handleLayoutSync = useCallback(() => {
+    // Use requestIdleCallback for better performance when available
+    if (window.requestIdleCallback) {
+      requestIdleCallback(() => {
+        syncHeaderAlertHeights();
+      });
+    } else {
+      // Fallback to requestAnimationFrame
+      requestAnimationFrame(() => {
+        syncHeaderAlertHeights();
+      });
+    }
+  }, []);
+
   // Sync layout offsets on route changes (only once on mount)
   React.useEffect(() => {
-    // Use requestAnimationFrame to avoid blocking the main thread
-    requestAnimationFrame(() => {
-      syncHeaderAlertHeights();
-    });
-  }, []);
+    handleLayoutSync();
+  }, [handleLayoutSync]);
 
   return (
     <Provider store={store}>
