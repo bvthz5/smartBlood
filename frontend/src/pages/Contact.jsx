@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Nav from '../components/Nav';
+import { syncHeaderAlertHeights } from '../utils/layoutOffsets';
 import '../styles/contact.css';
 
 // Register GSAP plugins
@@ -38,6 +40,11 @@ export default function Contact() {
 
     window.addEventListener('languageChanged', handleLanguageChange);
     return () => window.removeEventListener('languageChanged', handleLanguageChange);
+  }, []);
+
+  // Sync layout offsets when component mounts
+  useEffect(() => {
+    syncHeaderAlertHeights();
   }, []);
 
   // Animation setup
@@ -85,18 +92,32 @@ export default function Contact() {
     setIsSubmitting(true);
     setSubmitStatus(null);
 
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitStatus('success');
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: '',
-        type: 'general'
-      });
-    }, 2000);
+    // Simulate form submission - use requestIdleCallback for better performance
+    if (window.requestIdleCallback) {
+      requestIdleCallback(() => {
+        setIsSubmitting(false);
+        setSubmitStatus('success');
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: '',
+          type: 'general'
+        });
+      }, { timeout: 2000 });
+    } else {
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setSubmitStatus('success');
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: '',
+          type: 'general'
+        });
+      }, 2000);
+    }
   };
 
   const contactInfo = language === 'en' ? [
@@ -192,7 +213,9 @@ export default function Contact() {
   ];
 
   return (
-    <main className="contact-page">
+    <>
+      <Nav />
+      <main className="contact-page">
       {/* Hero Section */}
       <section ref={heroRef} className="contact-hero">
         <div className="container">
@@ -403,6 +426,7 @@ export default function Contact() {
           </div>
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }

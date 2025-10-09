@@ -105,6 +105,7 @@ def register_blueprints(app):
     from .requests.routes import req_bp
     from .admin.match_routes import admin_match_bp
     from .api.health import health_bp
+    from .homepage.routes import homepage_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(donor_bp)
@@ -114,6 +115,7 @@ def register_blueprints(app):
     app.register_blueprint(req_bp)
     app.register_blueprint(admin_match_bp)
     app.register_blueprint(health_bp)
+    app.register_blueprint(homepage_bp)
 
 def initialize_database(app):
     """Initialize database and create tables if they don't exist"""

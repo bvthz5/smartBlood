@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Nav from '../components/Nav';
+import { syncHeaderAlertHeights } from '../utils/layoutOffsets';
 import '../styles/policies.css';
 
 // Register GSAP plugins
@@ -31,6 +33,11 @@ export default function Policies() {
 
     window.addEventListener('languageChanged', handleLanguageChange);
     return () => window.removeEventListener('languageChanged', handleLanguageChange);
+  }, []);
+
+  // Sync layout offsets when component mounts
+  useEffect(() => {
+    syncHeaderAlertHeights();
   }, []);
 
   // Animation setup
@@ -72,17 +79,17 @@ export default function Policies() {
   }, [activeSection]);
 
   const sections = language === 'en' ? [
-    { id: 'privacy', title: 'Privacy Policy', icon: 'Lock' },
-    { id: 'terms', title: 'Terms of Service', icon: 'Document' },
-    { id: 'data', title: 'Data Protection', icon: 'Shield' },
-    { id: 'medical', title: 'Medical Guidelines', icon: 'Hospital' },
-    { id: 'donor', title: 'Donor Rights', icon: 'Heart' }
+    { id: 'privacy', title: 'Privacy Policy', icon: '🔒' },
+    { id: 'terms', title: 'Terms of Service', icon: '📄' },
+    { id: 'data', title: 'Data Protection', icon: '🛡️' },
+    { id: 'medical', title: 'Medical Guidelines', icon: '🏥' },
+    { id: 'donor', title: 'Donor Rights', icon: '❤️' }
   ] : [
-    { id: 'privacy', title: 'സ്വകാര്യതാ നയം', icon: 'Lock' },
-    { id: 'terms', title: 'സേവന നിബന്ധനകൾ', icon: 'Document' },
-    { id: 'data', title: 'ഡാറ്റാ സംരക്ഷണം', icon: 'Shield' },
-    { id: 'medical', title: 'മെഡിക്കൽ മാർഗ്ഗനിർദ്ദേശങ്ങൾ', icon: 'Hospital' },
-    { id: 'donor', title: 'ദാനി അവകാശങ്ങൾ', icon: 'Heart' }
+    { id: 'privacy', title: 'സ്വകാര്യതാ നയം', icon: '🔒' },
+    { id: 'terms', title: 'സേവന നിബന്ധനകൾ', icon: '📄' },
+    { id: 'data', title: 'ഡാറ്റാ സംരക്ഷണം', icon: '🛡️' },
+    { id: 'medical', title: 'മെഡിക്കൽ മാർഗ്ഗനിർദ്ദേശങ്ങൾ', icon: '🏥' },
+    { id: 'donor', title: 'ദാനി അവകാശങ്ങൾ', icon: '❤️' }
   ];
 
   const policyContent = {
@@ -284,7 +291,9 @@ export default function Policies() {
   );
 
   return (
-    <main className="policies-page">
+    <>
+      <Nav />
+      <main className="policies-page">
       {/* Hero Section */}
       <section ref={heroRef} className="policies-hero">
         <div className="container">
@@ -354,6 +363,7 @@ export default function Policies() {
           </div>
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }

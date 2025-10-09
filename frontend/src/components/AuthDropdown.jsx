@@ -14,8 +14,20 @@ export default function AuthDropdown() {
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    // Use throttled mouse handler for better performance
+    let ticking = false;
+    const throttledHandleClickOutside = (event) => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleClickOutside(event);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    
+    document.addEventListener('mousedown', throttledHandleClickOutside, { passive: true });
+    return () => document.removeEventListener('mousedown', throttledHandleClickOutside);
   }, [])
 
   const handleKeyDown = (event) => {

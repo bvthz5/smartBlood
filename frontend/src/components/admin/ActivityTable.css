@@ -1,0 +1,416 @@
+/* Activity Table Styles */
+.activity-table {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.activity-table::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.activity-table:hover::before {
+  opacity: 1;
+}
+
+/* Table Header */
+.table-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.table-title-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.table-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
+}
+
+.table-subtitle {
+  font-size: 0.9rem;
+  color: var(--color-textSecondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.table-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-select {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.view-all-button {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-all-button:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Table Container */
+.table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-background);
+}
+
+/* Table Header Cells */
+.table-header-cell {
+  background: var(--color-surfaceVariant);
+  padding: 1rem;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  position: relative;
+}
+
+.table-header-cell.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.table-header-cell.sortable:hover {
+  background: var(--color-border);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Table Rows and Cells */
+.table-row {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.table-row:hover {
+  background: var(--color-surfaceVariant);
+}
+
+.table-cell {
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-borderLight);
+  font-size: 0.9rem;
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+.cell-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Priority Indicators */
+.priority-indicator {
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.priority-urgent {
+  color: #EF4444;
+}
+
+.priority-normal {
+  color: var(--color-textMuted);
+}
+
+.priority-low {
+  color: #3B82F6;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status-completed {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10B981;
+}
+
+.status-pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: #F59E0B;
+}
+
+.status-progress {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3B82F6;
+}
+
+.status-cancelled {
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+}
+
+.status-default {
+  background: var(--color-surfaceVariant);
+  color: var(--color-textSecondary);
+}
+
+/* Cell Content Styling */
+.donor-name {
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.hospital-name {
+  color: var(--color-text);
+}
+
+.blood-type {
+  font-weight: 600;
+  color: var(--color-primary);
+  background: rgba(220, 38, 38, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.units-count {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.time-ago {
+  color: var(--color-textSecondary);
+  font-size: 0.85rem;
+}
+
+/* Empty State */
+.table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+.empty-subtitle {
+  font-size: 0.9rem;
+  color: var(--color-textSecondary);
+}
+
+/* Loading State */
+.activity-table.loading {
+  pointer-events: none;
+}
+
+.activity-table.loading .table-title.skeleton {
+  width: 40%;
+  height: 24px;
+  margin-bottom: 0.5rem;
+}
+
+.activity-table.loading .table-action.skeleton {
+  width: 100px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.activity-table.loading .table-header-cell .skeleton {
+  width: 80%;
+  height: 16px;
+}
+
+.activity-table.loading .table-cell .skeleton {
+  width: 70%;
+  height: 16px;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--color-surfaceVariant) 25%, var(--color-border) 50%, var(--color-surfaceVariant) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .activity-table {
+    padding: 1.25rem;
+  }
+  
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .table-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .table-header-cell,
+  .table-cell {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .table-title {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .activity-table {
+    padding: 1rem;
+  }
+  
+  .table-header-cell,
+  .table-cell {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.8rem;
+  }
+  
+  .table-title {
+    font-size: 1rem;
+  }
+  
+  .table-subtitle {
+    font-size: 0.85rem;
+  }
+  
+  .view-all-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Scrollbar Styling */
+.table-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: var(--color-textMuted);
+}
+
+/* Focus Management */
+.table-row:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+/* Print Styles */
+@media print {
+  .activity-table {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  
+  .table-actions {
+    display: none;
+  }
+  
+  .table-container {
+    overflow: visible;
+  }
+}

@@ -162,21 +162,32 @@ export const lazyLoadAnimation = (callback) => {
  */
 export const preloadCriticalResources = () => {
   if (typeof window !== 'undefined' && document) {
-    // Preload logo
-    const logoLink = document.createElement('link');
-    logoLink.rel = 'preload';
-    logoLink.as = 'image';
-    logoLink.href = '/logo.png';
-    document.head.appendChild(logoLink);
+    // Use requestIdleCallback for better performance
+    const preloadResources = () => {
+      // Preload logo
+      const logoLink = document.createElement('link');
+      logoLink.rel = 'preload';
+      logoLink.as = 'image';
+      logoLink.href = '/logo.png';
+      logoLink.style.display = 'none'; // Hide to prevent layout impact
+      document.head.appendChild(logoLink);
 
-    // Preload fonts
-    const fontLink = document.createElement('link');
-    fontLink.rel = 'preload';
-    fontLink.as = 'font';
-    fontLink.type = 'font/woff2';
-    fontLink.href = 'https://fonts.gstatic.com/s/poppins/v20/pxiEyp8kv8JHgFVrJJfecg.woff2';
-    fontLink.crossOrigin = 'anonymous';
-    document.head.appendChild(fontLink);
+      // Preload fonts
+      const fontLink = document.createElement('link');
+      fontLink.rel = 'preload';
+      fontLink.as = 'font';
+      fontLink.type = 'font/woff2';
+      fontLink.href = 'https://fonts.gstatic.com/s/poppins/v20/pxiEyp8kv8JHgFVrJJfecg.woff2';
+      fontLink.crossOrigin = 'anonymous';
+      fontLink.style.display = 'none'; // Hide to prevent layout impact
+      document.head.appendChild(fontLink);
+    };
+
+    if (window.requestIdleCallback) {
+      requestIdleCallback(preloadResources, { timeout: 1000 });
+    } else {
+      setTimeout(preloadResources, 0);
+    }
   }
 };
 

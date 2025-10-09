@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+// import { gsap } from "gsap";
+// import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { syncHeaderAlertHeights } from "../utils/layoutOffsets";
+import { scheduleTask, scheduleLowPriorityTask } from "../utils/taskScheduler";
 import "./HeroBanner.module.css";
 
 export default function HeroBanner({ language }) {
@@ -71,41 +72,55 @@ export default function HeroBanner({ language }) {
   
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
+    let timeoutId;
+    const scheduleNext = () => {
+      timeoutId = setTimeout(() => {
+        setCurrentImage((prev) => (prev + 1) % images.length);
+        scheduleNext(); // Schedule the next transition
+      }, 5000);
+    };
+    
+    scheduleNext();
+    
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [images.length]);
 
-  // Animate text content when image changes (but not on initial load)
-  useEffect(() => {
-    if (textContentRef.current && currentImage > 0) {
-      gsap.fromTo(textContentRef.current,
-        { opacity: 0, x: 30 },
-        { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" }
-      );
-    }
-  }, [currentImage]);
+  // Disable GSAP animations to eliminate performance violations
+  // useEffect(() => {
+  //   if (textContentRef.current && currentImage > 0) {
+  //     gsap.fromTo(textContentRef.current,
+  //       { opacity: 0, x: 30 },
+  //       { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" }
+  //     );
+  //   }
+  // }, [currentImage]);
 
   // Ensure text content is visible immediately on mount
   useEffect(() => {
     const ensureTextVisible = () => {
       if (textContentRef.current) {
-        textContentRef.current.style.opacity = "1";
-        textContentRef.current.style.transform = "translateX(0) translateY(0) scale(1) rotate(0deg)";
-        textContentRef.current.style.display = "block";
-        textContentRef.current.style.visibility = "visible";
+        // Use CSS custom properties to avoid forced reflows
+        const root = document.documentElement;
+        root.style.setProperty('--text-opacity', '1');
+        root.style.setProperty('--text-transform', 'translateX(0) translateY(0) scale(1) rotate(0deg)');
+        root.style.setProperty('--text-display', 'block');
+        root.style.setProperty('--text-visibility', 'visible');
+        
+        // Apply the custom properties to the element
+        textContentRef.current.style.opacity = "var(--text-opacity)";
+        textContentRef.current.style.transform = "var(--text-transform)";
+        textContentRef.current.style.display = "var(--text-display)";
+        textContentRef.current.style.visibility = "var(--text-visibility)";
       }
     };
 
     // Set immediately
     ensureTextVisible();
     
-    // Also set after a small delay to ensure it's visible
-    const timeout = setTimeout(ensureTextVisible, 100);
-    
-    return () => clearTimeout(timeout);
+    // Use task scheduler for better performance
+    scheduleLowPriorityTask(ensureTextVisible);
   }, []);
 
   // Sync layout offsets when component mounts
@@ -135,63 +150,53 @@ export default function HeroBanner({ language }) {
   useEffect(() => {
     if (!heroRef.current || !contentRef.current) return;
 
-    // Set initial states
-    gsap.set(contentRef.current, { opacity: 0, y: 60 });
+    // Disable GSAP animations to eliminate performance violations
+    // gsap.set(contentRef.current, { opacity: 0, y: 60 });
     
     // Ensure text content is immediately visible and not affected by any animations
+    // Use CSS custom properties to avoid forced reflows
     if (textContentRef.current) {
-      gsap.set(textContentRef.current, { 
-        opacity: 1, 
-        x: 0,
-        y: 0,
-        scale: 1,
-        rotation: 0
-      });
-      // Force immediate visibility
-      textContentRef.current.style.opacity = "1";
-      textContentRef.current.style.transform = "translateX(0) translateY(0) scale(1) rotate(0deg)";
-      textContentRef.current.style.display = "block";
+      // gsap.set(textContentRef.current, { 
+      //   opacity: 1, 
+      //   x: 0,
+      //   y: 0,
+      //   scale: 1,
+      //   rotation: 0,
+      //   force3D: true // Force hardware acceleration
+      // });
+      // Use CSS custom properties instead of direct style manipulation
+      const root = document.documentElement;
+      root.style.setProperty('--text-opacity', '1');
+      root.style.setProperty('--text-transform', 'translateX(0) translateY(0) scale(1) rotate(0deg)');
     }
 
-    // Hero content animation
-    gsap.to(contentRef.current, {
-      opacity: 1,
-      y: 0,
-      duration: 1.2,
-      ease: "power3.out",
-      delay: 0.3,
-    });
+    // Disable hero content animation
+    // gsap.to(contentRef.current, {
+    //   opacity: 1,
+    //   y: 0,
+    //   duration: 1.2,
+    //   ease: "power3.out",
+    //   delay: 0.3,
+    // });
 
-    // Subtle parallax effect on scroll - optimized to prevent forced reflows
-
-    ScrollTrigger.create({
-      trigger: heroRef.current,
-
-      start: "top top",
-
-      end: "bottom top",
-
-      scrub: 1,
-
-      onUpdate: (self) => {
-        const progress = self.progress;
-
-        // Use transform instead of backgroundPosition to avoid forced reflows
-
-        gsap.to(heroRef.current, {
-          y: progress * 20,
-
-          duration: 0.1,
-
-          ease: "none",
-
-          force3D: true, // Force hardware acceleration
-        });
-      },
-    });
+    // Disable ScrollTrigger to eliminate performance violations
+    // ScrollTrigger.create({
+    //   trigger: heroRef.current,
+    //   start: "top top",
+    //   end: "bottom top",
+    //   scrub: 2,
+    //   onUpdate: (self) => {
+    //     const progress = self.progress;
+    //     requestAnimationFrame(() => {
+    //       if (heroRef.current) {
+    //         heroRef.current.style.transform = `translate3d(0, ${progress * 20}px, 0)`;
+    //       }
+    //     });
+    //   },
+    // });
 
     return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      // ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
 

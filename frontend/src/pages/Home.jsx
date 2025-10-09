@@ -1,16 +1,19 @@
 // src/pages/Home.jsx
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+// DISABLE GSAP completely to eliminate performance violations
+// import { gsap } from 'gsap'
+// import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Nav from '../components/Nav'
 import HeroBanner from '../components/HeroBanner'
 import SectionReveal from '../components/SectionReveal'
 import AlertsBar from '../components/AlertsBar'
+import { scheduleTask, scheduleLowPriorityTask } from '../utils/taskScheduler'
 import '../styles/home-new.css'
 
 
-// Register GSAP plugins
-gsap.registerPlugin(ScrollTrigger)
+// DISABLE GSAP completely to eliminate performance violations
+// gsap.registerPlugin(ScrollTrigger)
 
 // EmergencyBar is now handled by AlertsBar component
 
@@ -19,33 +22,61 @@ gsap.registerPlugin(ScrollTrigger)
 // Component for Statistics
 function StatsSection({ language }) {
   const [counts, setCounts] = useState({ donors: 0, units: 0, hospitals: 0, districts: 0 })
-  const targetCounts = { donors: 12458, units: 8732, hospitals: 245, districts: 14 }
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const intervalRef = useRef(null)
 
+  // Fetch stats from backend
   useEffect(() => {
-    const animateCounts = () => {
-      setCounts(prev => ({
-        donors: Math.min(prev.donors + 50, targetCounts.donors),
-        units: Math.min(prev.units + 35, targetCounts.units),
-        hospitals: Math.min(prev.hospitals + 1, targetCounts.hospitals),
-        districts: Math.min(prev.districts + 1, targetCounts.districts)
-      }))
+    const fetchStats = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        const response = await import('../services/homepageService')
+        const stats = await response.getCachedHomepageStats()
+        
+        if (stats) {
+          setCounts({
+            donors: stats.donors_registered || 0,
+            units: stats.units_collected || 0,
+            hospitals: stats.active_hospitals || 0,
+            districts: stats.districts_covered || 0
+          })
+        }
+      } catch (err) {
+        console.error('Error fetching stats:', err)
+        setError(err)
+        // Fallback to default values
+        setCounts({
+          donors: 12458,
+          units: 8732,
+          hospitals: 245,
+          districts: 14
+        })
+      } finally {
+        setLoading(false)
+      }
     }
 
-    intervalRef.current = setInterval(animateCounts, 50)
-    return () => clearInterval(intervalRef.current)
+    fetchStats()
+    
+    // Refresh stats every 10 minutes
+    const refreshInterval = setInterval(fetchStats, 10 * 60 * 1000)
+    
+    return () => clearInterval(refreshInterval)
   }, [])
 
   const stats = language === 'en' ? [
-    { label: 'Donors Registered', value: counts.donors.toLocaleString() },
-    { label: 'Units Collected', value: counts.units.toLocaleString() },
-    { label: 'Active Hospitals', value: counts.hospitals.toLocaleString() },
-    { label: 'Districts Covered', value: counts.districts.toLocaleString() }
+    { label: 'Donors Registered', value: loading ? '...' : counts.donors.toLocaleString() },
+    { label: 'Units Collected', value: loading ? '...' : counts.units.toLocaleString() },
+    { label: 'Active Hospitals', value: loading ? '...' : counts.hospitals.toLocaleString() },
+    { label: 'Districts Covered', value: loading ? '...' : counts.districts.toLocaleString() }
   ] : [
-    { label: 'രജിസ്റ്റർ ചെയ്ത ദാനികൾ', value: counts.donors.toLocaleString() },
-    { label: 'ശേഖരിച്ച യൂണിറ്റുകൾ', value: counts.units.toLocaleString() },
-    { label: 'സജീവ ആശുപത്രികൾ', value: counts.hospitals.toLocaleString() },
-    { label: 'ഉൾപ്പെടുത്തിയ ജില്ലകൾ', value: counts.districts.toLocaleString() }
+    { label: 'രജിസ്റ്റർ ചെയ്ത ദാനികൾ', value: loading ? '...' : counts.donors.toLocaleString() },
+    { label: 'ശേഖരിച്ച യൂണിറ്റുകൾ', value: loading ? '...' : counts.units.toLocaleString() },
+    { label: 'സജീവ ആശുപത്രികൾ', value: loading ? '...' : counts.hospitals.toLocaleString() },
+    { label: 'ഉൾപ്പെടുത്തിയ ജില്ലകൾ', value: loading ? '...' : counts.districts.toLocaleString() }
   ]
 
   return (
@@ -84,34 +115,35 @@ function WhyDonateSection({ language }) {
   ]
 
   useEffect(() => {
-    if (!sectionRef.current || !cardsRef.current.length) return
+    // DISABLE GSAP animations to eliminate performance violations
+    // if (!sectionRef.current || !cardsRef.current.length) return
 
-    // Set initial state
-    gsap.set(cardsRef.current, { 
-      opacity: 0, 
-      y: 60,
-      scale: 0.9
-    })
+    // // Set initial state
+    // gsap.set(cardsRef.current, { 
+    //   opacity: 0, 
+    //   y: 60,
+    //   scale: 0.9
+    // })
 
-    // Create scroll trigger animation
-    ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: "top 80%",
-      onEnter: () => {
-        gsap.to(cardsRef.current, {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.8,
-          stagger: 0.15,
-          ease: "power3.out"
-        })
-      }
-    })
+    // // Create scroll trigger animation
+    // ScrollTrigger.create({
+    //   trigger: sectionRef.current,
+    //   start: "top 80%",
+    //   onEnter: () => {
+    //     gsap.to(cardsRef.current, {
+    //       opacity: 1,
+    //       y: 0,
+    //       scale: 1,
+    //       duration: 0.8,
+    //       stagger: 0.15,
+    //       ease: "power3.out"
+    //     })
+    //   }
+    // })
 
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-    }
+    // return () => {
+    //   ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+    // }
   }, [])
 
   return (
@@ -159,55 +191,57 @@ function CompatibilityTool({ language }) {
   const bloodGroups = Object.keys(compatibility)
 
   useEffect(() => {
-    if (!sectionRef.current) return
+    // DISABLE GSAP animations to eliminate performance violations
+    // if (!sectionRef.current) return
 
-    // Set initial state
-    gsap.set(buttonsRef.current, { opacity: 0, y: 30 })
-    gsap.set(cardsRef.current, { opacity: 0, y: 40 })
+    // // Set initial state
+    // gsap.set(buttonsRef.current, { opacity: 0, y: 30 })
+    // gsap.set(cardsRef.current, { opacity: 0, y: 40 })
 
-    // Create scroll trigger animation
-    ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: "top 80%",
-      onEnter: () => {
-        gsap.to(buttonsRef.current, {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: "power3.out"
-        })
+    // // Create scroll trigger animation
+    // ScrollTrigger.create({
+    //   trigger: sectionRef.current,
+    //   start: "top 80%",
+    //   onEnter: () => {
+    //     gsap.to(buttonsRef.current, {
+    //       opacity: 1,
+    //       y: 0,
+    //       duration: 0.6,
+    //       stagger: 0.1,
+    //       ease: "power3.out"
+    //     })
         
-        gsap.to(cardsRef.current, {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          stagger: 0.2,
-          ease: "power3.out",
-          delay: 0.3
-        })
-      }
-    })
+    //     gsap.to(cardsRef.current, {
+    //       opacity: 1,
+    //       y: 0,
+    //       duration: 0.8,
+    //       stagger: 0.2,
+    //       ease: "power3.out",
+    //       delay: 0.3
+    //     })
+    //   }
+    // })
 
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-    }
+    // return () => {
+    //   ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+    // }
   }, [])
 
   useEffect(() => {
-    // Animate compatibility items when blood group changes
-    if (itemsRef.current.length > 0) {
-      gsap.fromTo(itemsRef.current, 
-        { opacity: 0, scale: 0.8 },
-        { 
-          opacity: 1, 
-          scale: 1, 
-          duration: 0.5, 
-          stagger: 0.1,
-          ease: "back.out(1.7)"
-        }
-      )
-    }
+    // DISABLE GSAP animations to eliminate performance violations
+    // // Animate compatibility items when blood group changes
+    // if (itemsRef.current.length > 0) {
+    //   gsap.fromTo(itemsRef.current, 
+    //     { opacity: 0, scale: 0.8 },
+    //     { 
+    //       opacity: 1, 
+    //       scale: 1, 
+    //       duration: 0.5, 
+    //       stagger: 0.1,
+    //       ease: "back.out(1.7)"
+    //     }
+    //   )
+    // }
   }, [selectedBloodGroup])
 
   return (
@@ -372,8 +406,11 @@ function AlertsCampsSection({ language }) {
 // Component for Testimonials
 function TestimonialsSection({ language }) {
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
+  const [testimonials, setTestimonials] = useState([])
+  const [loading, setLoading] = useState(true)
   
-  const testimonials = language === 'en' ? [
+  // Default fallback testimonials
+  const defaultTestimonials = language === 'en' ? [
     {
       quote: "SmartBlood saved my father's life by connecting us with a donor within hours.",
       author: "Priya S.",
@@ -407,11 +444,45 @@ function TestimonialsSection({ language }) {
     }
   ]
 
+  // Fetch testimonials from backend
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
-    }, 5000)
-    return () => clearInterval(interval)
+    const fetchTestimonials = async () => {
+      try {
+        setLoading(true)
+        
+        const response = await import('../services/homepageService')
+        const backendTestimonials = await response.getCachedHomepageTestimonials()
+        
+        if (backendTestimonials && backendTestimonials.length > 0) {
+          setTestimonials(backendTestimonials)
+        } else {
+          setTestimonials(defaultTestimonials)
+        }
+      } catch (err) {
+        console.error('Error fetching testimonials:', err)
+        setTestimonials(defaultTestimonials)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTestimonials()
+  }, [language])
+
+  useEffect(() => {
+    let timeoutId;
+    const scheduleNext = () => {
+      timeoutId = setTimeout(() => {
+        setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+        scheduleNext(); // Schedule the next transition
+      }, 5000);
+    };
+    
+    scheduleNext();
+    
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    }
   }, [testimonials.length])
 
   return (
@@ -422,11 +493,17 @@ function TestimonialsSection({ language }) {
         </h2>
         <div className="testimonial-carousel">
           <div className="testimonial-card">
-            <div className="testimonial-quote">"{testimonials[currentTestimonial].quote}"</div>
-            <div className="testimonial-author">
-              <strong>{testimonials[currentTestimonial].author}</strong>
-              <span>{testimonials[currentTestimonial].role}</span>
-            </div>
+            {loading ? (
+              <div className="testimonial-quote">Loading testimonials...</div>
+            ) : (
+              <>
+                <div className="testimonial-quote">"{testimonials[currentTestimonial]?.quote}"</div>
+                <div className="testimonial-author">
+                  <strong>{testimonials[currentTestimonial]?.author}</strong>
+                  <span>{testimonials[currentTestimonial]?.role}</span>
+                </div>
+              </>
+            )}
           </div>
           <div className="testimonial-dots">
             {testimonials.map((_, index) => (
@@ -452,49 +529,50 @@ function DownloadAppSection({ language }) {
   const squaresRef = useRef([])
 
   useEffect(() => {
-    if (!sectionRef.current) return
+    // DISABLE GSAP animations to eliminate performance violations
+    // if (!sectionRef.current) return
 
-    // Set initial state
-    gsap.set([infoRef.current, qrRef.current], { opacity: 0, y: 50 })
-    gsap.set(buttonsRef.current, { opacity: 0, scale: 0.8 })
-    gsap.set(squaresRef.current, { opacity: 0, scale: 0 })
+    // // Set initial state
+    // gsap.set([infoRef.current, qrRef.current], { opacity: 0, y: 50 })
+    // gsap.set(buttonsRef.current, { opacity: 0, scale: 0.8 })
+    // gsap.set(squaresRef.current, { opacity: 0, scale: 0 })
 
-    // Create scroll trigger animation
-    ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: "top 80%",
-      onEnter: () => {
-        gsap.to([infoRef.current, qrRef.current], {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          stagger: 0.2,
-          ease: "power3.out"
-        })
+    // // Create scroll trigger animation
+    // ScrollTrigger.create({
+    //   trigger: sectionRef.current,
+    //   start: "top 80%",
+    //   onEnter: () => {
+    //     gsap.to([infoRef.current, qrRef.current], {
+    //       opacity: 1,
+    //       y: 0,
+    //       duration: 0.8,
+    //       stagger: 0.2,
+    //       ease: "power3.out"
+    //     })
 
-        gsap.to(buttonsRef.current, {
-          opacity: 1,
-          scale: 1,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: "back.out(1.7)",
-          delay: 0.4
-        })
+    //     gsap.to(buttonsRef.current, {
+    //       opacity: 1,
+    //       scale: 1,
+    //       duration: 0.6,
+    //       stagger: 0.1,
+    //       ease: "back.out(1.7)",
+    //       delay: 0.4
+    //     })
 
-        gsap.to(squaresRef.current, {
-          opacity: 1,
-          scale: 1,
-          duration: 0.4,
-          stagger: 0.05,
-          ease: "power3.out",
-          delay: 0.6
-        })
-      }
-    })
+    //     gsap.to(squaresRef.current, {
+    //       opacity: 1,
+    //       scale: 1,
+    //       duration: 0.4,
+    //       stagger: 0.05,
+    //       ease: "power3.out",
+    //       delay: 0.6
+    //     })
+    //   }
+    // })
 
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-    }
+    // return () => {
+    //   ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+    // }
   }, [])
 
   return (
@@ -539,6 +617,40 @@ function DownloadAppSection({ language }) {
 
 // Component for About Section
 function AboutSection({ language }) {
+  const [aboutStats, setAboutStats] = useState({
+    livesSaved: 500,
+    partnerHospitals: 50,
+    support: '24/7'
+  })
+  const [loading, setLoading] = useState(true)
+
+  // Fetch about stats from backend
+  useEffect(() => {
+    const fetchAboutStats = async () => {
+      try {
+        setLoading(true)
+        
+        const response = await import('../services/homepageService')
+        const stats = await response.getCachedHomepageStats()
+        
+        if (stats) {
+          setAboutStats({
+            livesSaved: stats.lives_saved || 500,
+            partnerHospitals: stats.active_hospitals || 50,
+            support: '24/7'
+          })
+        }
+      } catch (err) {
+        console.error('Error fetching about stats:', err)
+        // Keep default values
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchAboutStats()
+  }, [])
+
   return (
     <section id="about" className="about-section">
       <div className="container">
@@ -556,15 +668,19 @@ function AboutSection({ language }) {
           </div>
           <div className="about-stats">
             <div className="about-stat">
-              <div className="stat-number">500+</div>
+              <div className="stat-number">
+                {loading ? '...' : `${aboutStats.livesSaved.toLocaleString()}+`}
+              </div>
               <div className="stat-label">{language === 'en' ? 'Lives Saved' : 'ജീവിതങ്ങൾ രക്ഷിച്ചു'}</div>
             </div>
             <div className="about-stat">
-              <div className="stat-number">50+</div>
+              <div className="stat-number">
+                {loading ? '...' : `${aboutStats.partnerHospitals.toLocaleString()}+`}
+              </div>
               <div className="stat-label">{language === 'en' ? 'Partner Hospitals' : 'പങ്കാളി ആശുപത്രികൾ'}</div>
             </div>
             <div className="about-stat">
-              <div className="stat-number">24/7</div>
+              <div className="stat-number">{aboutStats.support}</div>
               <div className="stat-label">{language === 'en' ? 'Support' : 'പിന്തുണ'}</div>
             </div>
           </div>
@@ -596,11 +712,13 @@ export default function Home() {
   }, [])
 
   return (
-    <main className="home-page">
-      <AlertsBar language={language} />
-      <div className="full-bleed">
-        <HeroBanner language={language} />
-      </div>
+    <>
+      <Nav />
+      <main className="home-page">
+        <AlertsBar language={language} />
+        <div className="full-bleed" style={{ marginTop: '132px' }}>
+          <HeroBanner language={language} />
+        </div>
       
       <SectionReveal>
         <StatsSection language={language} />
@@ -697,6 +815,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
-    </main>
+      </main>
+    </>
   )
 }

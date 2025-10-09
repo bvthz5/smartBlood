@@ -1,13 +1,17 @@
 // src/components/AlertsBar.jsx
 import React, { useState, useEffect, useRef } from 'react'
+import { getCachedHomepageAlerts, getRelativeTime } from '../services/homepageService'
 
 export default function AlertsBar({ language }) {
   const [currentMessage, setCurrentMessage] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
+  const [emergencyMessages, setEmergencyMessages] = useState([])
+  const [loading, setLoading] = useState(true)
   const intervalRef = useRef(null)
   const containerRef = useRef(null)
   
-  const emergencyMessages = language === 'en' ? [
+  // Default fallback messages
+  const defaultMessages = language === 'en' ? [
     "🚨 Urgent Need: O+ in Trivandrum (2 units). [Click to Help]",
     "🚨 Emergency: A- blood needed in Kochi (1 unit). [Donate Now]",
     "🚨 Critical: B+ platelets required in Kozhikode (3 units). [Urgent]"
@@ -17,17 +21,74 @@ export default function AlertsBar({ language }) {
     "🚨 നിർണായകം: കോഴിക്കോട് B+ പ്ലേറ്റ്ലെറ്റുകൾ ആവശ്യം (3 യൂണിറ്റ്). [അടിയന്തരം]"
   ]
 
+  // Fetch alerts from backend
   useEffect(() => {
-    if (!isHovered) {
-      intervalRef.current = setInterval(() => {
-        setCurrentMessage((prev) => (prev + 1) % emergencyMessages.length)
-      }, 6000) // 6 seconds display time
-    } else {
-      clearInterval(intervalRef.current)
+    const fetchAlerts = async () => {
+      try {
+        setLoading(true)
+        const alerts = await getCachedHomepageAlerts()
+        
+        if (alerts && alerts.length > 0) {
+          const formattedAlerts = alerts.map(alert => {
+            const timeAgo = getRelativeTime(alert.created_at)
+            
+            if (alert.type === 'alert') {
+              return language === 'en' 
+                ? `🚨 ${alert.title} (${alert.quantity} units) - ${timeAgo} [Click to Help]`
+                : `🚨 ${alert.title} (${alert.quantity} യൂണിറ്റ്) - ${timeAgo} [സഹായിക്കാൻ ക്ലിക്ക് ചെയ്യുക]`
+            } else if (alert.type === 'camp') {
+              return language === 'en'
+                ? `🏥 ${alert.title} - ${timeAgo} [Join Camp]`
+                : `🏥 ${alert.title} - ${timeAgo} [ക്യാമ്പിൽ പങ്കെടുക്കുക]`
+            }
+            return alert.title
+          })
+          setEmergencyMessages(formattedAlerts)
+        } else {
+          setEmergencyMessages(defaultMessages)
+        }
+      } catch (error) {
+        console.error('Error fetching alerts:', error)
+        setEmergencyMessages(defaultMessages)
+      } finally {
+        setLoading(false)
+      }
     }
 
-    return () => clearInterval(intervalRef.current)
-  }, [isHovered, emergencyMessages.length])
+    fetchAlerts()
+    
+    // Refresh alerts every 5 minutes
+    const refreshInterval = setInterval(fetchAlerts, 5 * 60 * 1000)
+    
+    return () => clearInterval(refreshInterval)
+  }, [language])
+
+  useEffect(() => {
+    if (!isHovered && emergencyMessages.length > 0 && !loading) {
+      let timeoutId;
+      const scheduleNext = () => {
+        timeoutId = setTimeout(() => {
+          setCurrentMessage((prev) => (prev + 1) % emergencyMessages.length);
+          scheduleNext(); // Schedule the next transition
+        }, 6000); // 6 seconds display time
+      };
+      
+      scheduleNext();
+      intervalRef.current = timeoutId;
+    } else {
+      if (intervalRef.current) {
+        clearTimeout(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearTimeout(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+  }, [isHovered, emergencyMessages.length, loading])
 
   const goToPrevious = () => {
     setCurrentMessage((prev) => (prev - 1 + emergencyMessages.length) % emergencyMessages.length)
@@ -69,9 +130,11 @@ export default function AlertsBar({ language }) {
         </button>
         
         <div className="alerts-bar__content">
-          <span className="alerts-bar__icon" aria-hidden="true">🚨</span>
+          <span className="alerts-bar__icon" aria-hidden="true">
+            {loading ? '⏳' : '🚨'}
+          </span>
           <span className="alerts-bar__text">
-            {emergencyMessages[currentMessage]}
+            {loading ? (language === 'en' ? 'Loading alerts...' : 'അലേർട്ടുകൾ ലോഡ് ചെയ്യുന്നു...') : emergencyMessages[currentMessage]}
           </span>
         </div>
 

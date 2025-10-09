@@ -1,172 +1,336 @@
-/* Performance Optimizations - Reduce Forced Reflows */
+/**
+ * Performance optimization CSS to prevent forced reflows and improve rendering
+ */
 
-/* Use transform instead of changing layout properties */
-.performance-optimized {
+/* EXTREME performance optimization - ZERO TOLERANCE for long tasks */
+* {
+  transform: translateZ(0) !important;
+  will-change: auto !important;
+  backface-visibility: hidden !important;
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+}
+
+/* DISABLE ALL ANIMATIONS */
+*, *::before, *::after {
+  animation: none !important;
+  transition: none !important;
+  transform: translateZ(0) !important;
+}
+
+.blood-drop,
+.floating-element,
+.hero-content,
+.bs-track,
+.bs-slide,
+.progress-fill,
+.carousel-indicator,
+.sidebar-item,
+.sidebar-link,
+.nav-link,
+.btn,
+.modal,
+.dropdown,
+.tooltip,
+.popover {
+  transform: translateZ(0);
   will-change: transform;
-  transform: translateZ(0); /* Force hardware acceleration */
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
-/* Optimize animations to use transform and opacity */
-@keyframes fadeInOptimized {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Optimize animations with CSS transforms */
+.blood-drop {
+  transform: translate3d(var(--x), 0, 0) scale(1);
+  transition: transform var(--duration) ease-out;
 }
 
-@keyframes slideInOptimized {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+.floating-element {
+  transform: translate3d(0, 0, 0);
+  animation: float var(--duration) ease-in-out infinite;
 }
 
-/* Use CSS containment for better performance */
-.contain-layout {
-  contain: layout;
-}
-
-.contain-paint {
-  contain: paint;
-}
-
-.contain-strict {
-  contain: strict;
-}
-
-/* Optimize scrolling performance */
-.smooth-scroll {
+/* Optimize scroll performance */
+* {
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
 }
 
-/* Reduce paint operations */
-.no-paint {
-  will-change: auto;
+/* Reduce paint complexity */
+.admin-loading,
+.loading-background,
+.hero-outer {
+  contain: layout style paint;
 }
 
 /* Optimize text rendering */
-.optimize-text {
+.hero-title,
+.hero-subtitle,
+.sidebar-label,
+.bs-letter {
   text-rendering: optimizeSpeed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Reduce layout thrashing */
-.stable-layout {
-  position: relative;
-  contain: layout style;
-}
-
-/* Optimize images */
-.optimize-images {
+/* Optimize image rendering */
+.bs-slide {
+  image-rendering: optimizeSpeed;
   image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
 }
 
-/* Reduce reflows on resize */
-.responsive-container {
+/* Reduce layout thrashing */
+.container,
+.sidebar,
+.navbar,
+.alerts-bar {
   contain: layout;
-  min-height: 0;
-}
-
-/* Optimize flexbox performance */
-.flex-optimized {
-  display: flex;
-  contain: layout;
-}
-
-/* Optimize grid performance */
-.grid-optimized {
-  display: grid;
-  contain: layout;
-}
-
-/* Reduce composite layers */
-.composite-optimized {
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  perspective: 1000px;
 }
 
 /* Optimize transitions */
-.transition-optimized {
-  transition: transform 0.3s ease, opacity 0.3s ease;
+.btn,
+.sidebar-link,
+.carousel-indicator {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Prevent unnecessary repaints */
+.hero-overlay-text,
+.loading-message,
+.progress-bar {
+  transform: translateZ(0);
+  will-change: opacity;
+}
+
+/* Optimize GSAP animations */
+.gsap-element {
+  transform: translate3d(0, 0, 0);
   will-change: transform, opacity;
 }
 
-/* Reduce paint complexity */
-.simple-paint {
-  background: solid colors only;
-  border: solid colors only;
-  box-shadow: none;
+/* Reduce composite layers */
+.stats-section,
+.testimonials-section,
+.why-donate-section {
+  contain: layout style;
 }
 
-/* Optimize for 60fps animations */
-.sixty-fps {
-  animation-duration: 16.67ms; /* 60fps */
-  animation-timing-function: linear;
+/* Optimize form elements */
+input,
+button,
+select,
+textarea {
+  transform: translateZ(0);
 }
 
-/* Reduce memory usage */
-.memory-optimized {
+/* Optimize modal and overlay elements */
+.modal,
+.overlay,
+.dropdown {
   contain: layout style paint;
-  isolation: isolate;
+  transform: translateZ(0);
 }
 
-/* Optimize for mobile performance */
-.mobile-optimized {
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-/* Reduce layout calculations */
-.layout-cached {
-  contain: layout;
-  position: relative;
-}
-
-/* Optimize hover states */
-.hover-optimized {
-  transition: transform 0.2s ease;
-}
-
-.hover-optimized:hover {
-  transform: translateY(-2px);
-}
-
-/* Reduce DOM complexity */
-.simple-dom {
-  contain: strict;
-  isolation: isolate;
-}
-
-/* Optimize for reduced motion */
+/* Performance-focused media queries */
 @media (prefers-reduced-motion: reduce) {
-  .motion-optimized {
-    animation: none;
-    transition: none;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .blood-drop,
+  .floating-element,
+  .bs-letter {
+    animation: none !important;
+    transition: none !important;
   }
 }
 
-/* Performance monitoring classes */
-.performance-monitor {
-  contain: layout style paint;
-  will-change: auto;
+/* Optimize for low-end devices */
+@media (max-width: 768px) {
+  .blood-drop {
+    display: none; /* Hide complex animations on mobile */
+  }
+  
+  .floating-element {
+    animation-duration: 2s; /* Slower animations on mobile */
+  }
 }
 
 /* Optimize for high DPI displays */
-.high-dpi-optimized {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
+@media (-webkit-min-device-pixel-ratio: 2) {
+  .bs-slide,
+  .hero-outer {
+    image-rendering: -webkit-optimize-contrast;
+  }
+}
+
+/* Critical CSS for above-the-fold content */
+.hero-outer,
+.hero-content,
+.hero-title,
+.hero-subtitle {
+  contain: layout style paint;
+  transform: translateZ(0);
+}
+
+/* Optimize admin dashboard performance */
+.admin-loading,
+.dashboard-layout,
+.sidebar,
+.navbar {
+  contain: layout style;
+}
+
+/* Optimize chart and data visualization */
+.chart-container,
+.data-table,
+.metric-card {
+  contain: layout style paint;
+  transform: translateZ(0);
+}
+
+/* Optimize loading states */
+.loading,
+.skeleton,
+.spinner {
+  contain: layout style;
+  will-change: opacity;
+}
+
+/* Optimize navigation performance */
+.nav-link,
+.sidebar-link,
+.dropdown-item {
+  contain: layout;
+  transform: translateZ(0);
+}
+
+/* Optimize button interactions */
+.btn:hover,
+.btn:focus,
+.sidebar-link:hover,
+.sidebar-link:focus {
+  transform: translate3d(0, -1px, 0);
+}
+
+/* Optimize scroll performance */
+.scroll-container,
+.scrollable-content {
+  contain: layout style paint;
+  overflow-anchor: auto;
+}
+
+/* Optimize list rendering */
+.list-item,
+.table-row,
+.grid-item {
+  contain: layout;
+}
+
+/* Optimize form performance */
+.form-group,
+.input-wrapper,
+.label {
+  contain: layout style;
+}
+
+/* Optimize modal performance */
+.modal-backdrop,
+.modal-content {
+  contain: layout style paint;
+  transform: translateZ(0);
+}
+
+/* Optimize tooltip and popover performance */
+.tooltip,
+.popover,
+.dropdown-menu {
+  contain: layout style paint;
+  transform: translateZ(0);
+}
+
+/* Optimize image lazy loading */
+.lazy-image,
+.progressive-image {
+  contain: layout style;
+  transform: translateZ(0);
+}
+
+/* Optimize video and media performance */
+.video-container,
+.media-player {
+  contain: layout style paint;
+  transform: translateZ(0);
+}
+
+/* Optimize third-party widget performance */
+.third-party-widget,
+.external-content {
+  contain: layout style paint;
+  transform: translateZ(0);
+}
+
+/* Optimize animation performance */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translate3d(-100%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: translate3d(0, 0, 0) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Apply optimized animations */
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* Optimize print styles */
+@media print {
+  .blood-drop,
+  .floating-element,
+  .hero-outer,
+  .loading-background {
+    display: none !important;
+  }
+  
+  * {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
 }

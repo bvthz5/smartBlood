@@ -3,6 +3,8 @@
  * Optimized to prevent forced reflows and improve performance
  */
 
+import { scheduleTask, scheduleLowPriorityTask } from './taskScheduler';
+
 let lastHeaderHeight = 0;
 let lastAlertsHeight = 0;
 let isInitialized = false;
@@ -18,13 +20,15 @@ export function syncHeaderAlertHeights() {
     // Use requestIdleCallback for better performance
     const performSync = () => {
       try {
+        const startTime = performance.now();
+        
         const header = document.querySelector('.header--fixed, .header');
         const alertsBar = document.querySelector('.alerts-bar');
         
         let headerHeight = 76; // Default fallback
         let alertsHeight = 48; // Default fallback
         
-        // Batch all DOM reads to prevent forced reflows
+        // Batch all DOM reads to prevent forced reflows - use immediate reads with caching
         if (header) {
           const rect = header.getBoundingClientRect();
           headerHeight = Math.round(rect.height);
@@ -55,6 +59,14 @@ export function syncHeaderAlertHeights() {
           isInitialized = true;
         }
         
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+        
+        // Log performance if operation took too long
+        if (duration > 16) {
+          console.warn(`Layout sync took ${duration}ms - potential long task`);
+        }
+        
         isUpdating = false;
         
       } catch (error) {
@@ -63,13 +75,8 @@ export function syncHeaderAlertHeights() {
       }
     };
     
-    // Use requestIdleCallback for better performance
-    if (window.requestIdleCallback) {
-      requestIdleCallback(performSync, { timeout: 100 });
-    } else {
-      // Fallback to requestAnimationFrame
-      requestAnimationFrame(performSync);
-    }
+    // Use task scheduler for better performance
+    scheduleLowPriorityTask(performSync);
     
   } catch (error) {
     console.warn('Layout offset sync failed:', error);

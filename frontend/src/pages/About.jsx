@@ -3,6 +3,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Nav from '../components/Nav';
+import { syncHeaderAlertHeights } from '../utils/layoutOffsets';
+import { getCachedHomepageStats, formatNumber } from '../services/homepageService';
 import '../styles/about.css';
 
 // Register GSAP plugins
@@ -11,6 +14,14 @@ gsap.registerPlugin(ScrollTrigger);
 export default function About() {
   const [language, setLanguage] = useState('en');
   const [currentStat, setCurrentStat] = useState(0);
+  const [stats, setStats] = useState({
+    donors_registered: 0,
+    units_collected: 0,
+    active_hospitals: 0,
+    districts_covered: 0,
+    lives_saved: 0
+  });
+  const [loading, setLoading] = useState(true);
   
   const heroRef = useRef(null);
   const statsRef = useRef([]);
@@ -35,12 +46,46 @@ export default function About() {
     return () => window.removeEventListener('languageChanged', handleLanguageChange);
   }, []);
 
-  // Auto-rotating stats
+  // Fetch stats from backend
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentStat((prev) => (prev + 1) % 4);
-    }, 3000);
-    return () => clearInterval(interval);
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        const backendStats = await getCachedHomepageStats();
+        if (backendStats) {
+          setStats(backendStats);
+        }
+      } catch (error) {
+        console.error('Error fetching stats for About page:', error);
+        // Keep default values
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  // Auto-rotating stats - optimized with setTimeout
+  useEffect(() => {
+    let timeoutId;
+    const scheduleNext = () => {
+      timeoutId = setTimeout(() => {
+        setCurrentStat((prev) => (prev + 1) % 4);
+        scheduleNext(); // Schedule the next transition
+      }, 3000);
+    };
+    
+    scheduleNext();
+    
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, []);
+
+  // Sync layout offsets when component mounts
+  useEffect(() => {
+    syncHeaderAlertHeights();
   }, []);
 
   // Animation setup
@@ -123,21 +168,53 @@ export default function About() {
     };
   }, []);
 
-  const stats = language === 'en' ? [
-    { number: "500+", label: "Lives Saved", icon: "Heart" },
-    { number: "50+", label: "Partner Hospitals", icon: "Hospital" },
-    { number: "24/7", label: "Support Available", icon: "Clock" },
-    { number: "14", label: "Districts Covered", icon: "MapPin" }
+  const statsData = language === 'en' ? [
+    { 
+      number: loading ? "..." : `${formatNumber(stats.lives_saved)}+`, 
+      label: "Lives Saved", 
+      icon: "❤️" 
+    },
+    { 
+      number: loading ? "..." : `${formatNumber(stats.active_hospitals)}+`, 
+      label: "Partner Hospitals", 
+      icon: "🏥" 
+    },
+    { 
+      number: "24/7", 
+      label: "Support Available", 
+      icon: "🕐" 
+    },
+    { 
+      number: loading ? "..." : formatNumber(stats.districts_covered), 
+      label: "Districts Covered", 
+      icon: "📍" 
+    }
   ] : [
-    { number: "500+", label: "ജീവിതങ്ങൾ രക്ഷിച്ചു", icon: "Heart" },
-    { number: "50+", label: "പങ്കാളി ആശുപത്രികൾ", icon: "Hospital" },
-    { number: "24/7", label: "പിന്തുണ ലഭ്യം", icon: "Clock" },
-    { number: "14", label: "ജില്ലകൾ ഉൾപ്പെടുത്തി", icon: "MapPin" }
+    { 
+      number: loading ? "..." : `${formatNumber(stats.lives_saved)}+`, 
+      label: "ജീവിതങ്ങൾ രക്ഷിച്ചു", 
+      icon: "❤️" 
+    },
+    { 
+      number: loading ? "..." : `${formatNumber(stats.active_hospitals)}+`, 
+      label: "പങ്കാളി ആശുപത്രികൾ", 
+      icon: "🏥" 
+    },
+    { 
+      number: "24/7", 
+      label: "പിന്തുണ ലഭ്യം", 
+      icon: "🕐" 
+    },
+    { 
+      number: loading ? "..." : formatNumber(stats.districts_covered), 
+      label: "ജില്ലകൾ ഉൾപ്പെടുത്തി", 
+      icon: "📍" 
+    }
   ];
 
   const features = language === 'en' ? [
     {
-      icon: "Zap",
+      icon: "⚡",
       title: "Real-Time Matching",
       description: "Advanced algorithms instantly connect donors with patients in need, reducing response time from hours to minutes."
     },
@@ -152,7 +229,7 @@ export default function About() {
       description: "Seamless experience across all devices with push notifications for urgent blood requests in your area."
     },
     {
-      icon: "Hospital",
+      icon: "🏥",
       title: "Hospital Integration",
       description: "Direct integration with hospital systems for automated blood inventory management and request processing."
     },
@@ -162,13 +239,13 @@ export default function About() {
       description: "Comprehensive dashboards provide insights into donation patterns, demand forecasting, and system performance."
     },
     {
-      icon: "Globe",
+      icon: "🌍",
       title: "Multi-Language",
       description: "Supporting Malayalam and English to serve the diverse population of Kerala effectively."
     }
   ] : [
     {
-      icon: "Zap",
+      icon: "⚡",
       title: "റിയൽ-ടൈം മാച്ചിംഗ്",
       description: "ക്ഷണനെ സൂക്ഷിച്ച് ദാനികളെ രോഗികളുമായി ബന്ധിപ്പിക്കുന്ന മുമ്പോട്ടുള്ള അൽഗോരിതങ്ങൾ."
     },
@@ -183,7 +260,7 @@ export default function About() {
       description: "എല്ലാ ഉപകരണങ്ങളിലും മികച്ച അനുഭവം, അടിയന്തര രക്ത അഭ്യർത്ഥനകൾക്ക് പുഷ് അറിയിപ്പുകൾ."
     },
     {
-      icon: "Hospital",
+      icon: "🏥",
       title: "ആശുപത്രി സംയോജനം",
       description: "ആശുപത്രി സിസ്റ്റങ്ങളുമായി നേരിട്ടുള്ള സംയോജനം ഓട്ടോമാറ്റഡ് രക്ത ഇൻവെന്ററി മാനേജ്മെന്റിനായി."
     },
@@ -193,7 +270,7 @@ export default function About() {
       description: "സമഗ്ര ഡാഷ്ബോർഡുകൾ ദാന പാറ്റേണുകൾ, ഡിമാൻഡ് പ്രവചനം, സിസ്റ്റം പ്രകടനം എന്നിവയെക്കുറിച്ച് അന്തർദൃഷ്ടികൾ നൽകുന്നു."
     },
     {
-      icon: "Globe",
+      icon: "🌍",
       title: "ബഹുഭാഷാ",
       description: "കേരളത്തിന്റെ വൈവിധ്യമാർന്ന ജനസംഖ്യയെ ഫലപ്രദമായി സേവിക്കാൻ മലയാളം, ഇംഗ്ലീഷ് പിന്തുണ."
     }
@@ -264,7 +341,9 @@ export default function About() {
   ];
 
   return (
-    <main className="about-page">
+    <>
+      <Nav />
+      <main className="about-page">
       {/* Hero Section */}
       <section ref={heroRef} className="about-hero">
         <div className="container">
@@ -280,7 +359,7 @@ export default function About() {
                 : 'സാങ്കേതികവിദ്യയിലൂടെ കേരളത്തിലെ രക്തദാനത്തെ മാറ്റിമറിച്ച്, ജീവിതങ്ങളെ ബന്ധിപ്പിച്ച് സമൂഹങ്ങളെ രക്ഷിക്കുന്നു.'}
             </p>
             <div className="hero-stats">
-              {stats.map((stat, index) => (
+              {statsData.map((stat, index) => (
                 <div 
                   key={index}
                   ref={el => statsRef.current[index] = el}
@@ -444,6 +523,7 @@ export default function About() {
           </div>
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }

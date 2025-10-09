@@ -27,11 +27,23 @@ export default function BannerSlider(){
   const [paused, setPaused] = useState(false)
   const liveRef = useRef(null)
 
-  // autoplay with JS "magic"
+  // autoplay with optimized timing
   useEffect(()=>{
     if(paused) return
-    const id = setInterval(()=> setIndex(i => (i + 1) % SLIDES.length), 4800)
-    return () => clearInterval(id)
+    
+    let timeoutId;
+    const scheduleNext = () => {
+      timeoutId = setTimeout(() => {
+        setIndex(i => (i + 1) % SLIDES.length);
+        scheduleNext(); // Schedule the next transition
+      }, 4800);
+    };
+    
+    scheduleNext();
+    
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    }
   }, [paused])
 
   // announce slide for screen readers
@@ -39,13 +51,20 @@ export default function BannerSlider(){
     if(liveRef.current) liveRef.current.textContent = `${SLIDES[index].title} — ${SLIDES[index].subtitle}`
   }, [index])
 
-  // keyboard nav
+  // keyboard nav - optimized with throttling
   useEffect(()=>{
+    let ticking = false;
     const onKey = (e) => {
-      if(e.key === 'ArrowLeft') setIndex(i => (i - 1 + SLIDES.length) % SLIDES.length)
-      if(e.key === 'ArrowRight') setIndex(i => (i + 1) % SLIDES.length)
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          if(e.key === 'ArrowLeft') setIndex(i => (i - 1 + SLIDES.length) % SLIDES.length)
+          if(e.key === 'ArrowRight') setIndex(i => (i + 1) % SLIDES.length)
+          ticking = false;
+        });
+        ticking = true;
+      }
     }
-    window.addEventListener('keydown', onKey)
+    window.addEventListener('keydown', onKey, { passive: true })
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 

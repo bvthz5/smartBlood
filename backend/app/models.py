@@ -60,8 +60,18 @@ class Hospital(db.Model):
     address = db.Column(db.Text)
     district = db.Column(db.String(100))
     city = db.Column(db.String(100))
+    location = db.Column(db.String(255))  # For display purposes
     license_number = db.Column(db.String(100), unique=True)
     is_verified = db.Column(db.Boolean, default=False)
+    is_active = db.Column(db.Boolean, default=True)  # For homepage filtering
+    featured = db.Column(db.Boolean, default=False)  # For homepage featured hospitals
+    rating = db.Column(db.Float, default=4.5)  # Hospital rating
+    specialties = db.Column(db.Text)  # JSON string of specialties
+    website = db.Column(db.String(255))
+    contact_number = db.Column(db.String(20))
+    blood_type = db.Column(db.String(5))  # Primary blood type available
+    next_camp_date = db.Column(db.Date)  # Next blood donation camp
+    image_url = db.Column(db.Text)  # Hospital image
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     requests = db.relationship("Request", back_populates="hospital")

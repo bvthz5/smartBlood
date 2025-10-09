@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import AuthDropdown from './AuthDropdown'
+import { throttle } from '../utils/performance'
 import '../styles/nav.css'
 
 export default function Nav() {
@@ -41,8 +42,11 @@ export default function Nav() {
       else headerRef.current.classList.remove('scrolled')
     }
     onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    // Use throttled scroll handler for better performance
+    const throttledOnScroll = throttle(onScroll, 16); // 60fps throttling
+    
+    window.addEventListener('scroll', throttledOnScroll, { passive: true });
+    return () => window.removeEventListener('scroll', throttledOnScroll);
   }, [])
 
   useEffect(() => {
@@ -108,7 +112,7 @@ export default function Nav() {
               </button>
               <div className="header__dropdown-menu">
                 <NavLink 
-                  to="/about-us" 
+                  to="/about" 
                   className="header__dropdown-item"
                   onClick={() => setNavDropdownOpen(false)}
                 >
@@ -148,7 +152,7 @@ export default function Nav() {
                 onClick={toggleDarkMode}
                 aria-label="Toggle dark mode"
               >
-                {darkMode ? 'Sun' : 'Moon'}
+                {darkMode ? '☀️' : '🌙'}
               </button>
               <button 
                 className="header__toggle-btn header__toggle-btn--language" 
@@ -199,7 +203,7 @@ export default function Nav() {
 
         {open && (
           <div className="header__mobile" role="menu">
-            <NavLink className="header__link" to="/about-us" onClick={() => setOpen(false)}>About</NavLink>
+            <NavLink className="header__link" to="/about" onClick={() => setOpen(false)}>About</NavLink>
             <NavLink className="header__link" to="/faq" onClick={() => setOpen(false)}>FAQ</NavLink>
             <NavLink className="header__link" to="/policies" onClick={() => setOpen(false)}>Policies</NavLink>
             <NavLink className="header__link" to="/contact" onClick={() => setOpen(false)}>Contact</NavLink>
@@ -240,7 +244,7 @@ export default function Nav() {
             </button>
             <div className="header__dropdown-menu">
                 <NavLink 
-                  to="/about-us" 
+                  to="/about" 
                   className="header__dropdown-item"
                   onClick={() => setNavDropdownOpen(false)}
                 >

@@ -1,0 +1,489 @@
+/* NASA-Themed Admin Sidebar */
+
+:root {
+  /* NASA Color Palette */
+  --nasa-blue: #0B3D91;
+  --nasa-red: #FC3D21;
+  --nasa-white: #FFFFFF;
+  --nasa-dark-blue: #041E42;
+  --nasa-light-blue: #1E3A8A;
+  --nasa-gray: #6B7280;
+  --nasa-light-gray: #F3F4F6;
+  --nasa-dark-gray: #374151;
+  
+  /* Gradients */
+  --nasa-gradient-primary: linear-gradient(135deg, var(--nasa-blue) 0%, var(--nasa-light-blue) 100%);
+  --nasa-gradient-accent: linear-gradient(135deg, var(--nasa-red) 0%, #FF6B6B 100%);
+  --nasa-gradient-dark: linear-gradient(135deg, var(--nasa-dark-blue) 0%, var(--nasa-blue) 100%);
+  
+  /* Shadows */
+  --nasa-shadow-sm: 0 1px 3px rgba(11, 61, 145, 0.12);
+  --nasa-shadow-md: 0 4px 12px rgba(11, 61, 145, 0.15);
+  --nasa-shadow-lg: 0 8px 25px rgba(11, 61, 145, 0.2);
+  --nasa-glow: 0 0 20px rgba(11, 61, 145, 0.3);
+  
+  /* Transitions */
+  --nasa-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --nasa-transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-sidebar {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  width: 280px;
+  height: calc(100vh - 70px);
+  background: var(--nasa-gradient-dark);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--nasa-shadow-lg);
+  z-index: 999;
+  transition: var(--nasa-transition);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-sidebar.collapsed {
+  width: 70px;
+}
+
+/* Sidebar Header */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: var(--nasa-transition-fast);
+}
+
+.sidebar-logo:hover {
+  transform: translateY(-1px);
+}
+
+.logo-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--nasa-gradient-accent);
+  border-radius: 12px;
+  box-shadow: var(--nasa-shadow-md);
+  animation: logoFloat 3s ease-in-out infinite;
+}
+
+.logo-pulse {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid var(--nasa-red);
+  border-radius: 12px;
+  opacity: 0.3;
+  animation: logoPulse 2s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-2px) rotate(1deg); }
+}
+
+@keyframes logoPulse {
+  0% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.05); opacity: 0.1; }
+  100% { transform: scale(1); opacity: 0.3; }
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  opacity: 1;
+  transition: var(--nasa-transition);
+}
+
+.admin-sidebar.collapsed .logo-text {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.logo-main {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--nasa-white);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.logo-sub {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+
+/* Sidebar Navigation */
+.sidebar-nav {
+  flex: 1;
+  padding: 1rem 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.nav-section {
+  margin-bottom: 1.5rem;
+}
+
+.nav-section-header {
+  padding: 0 1.25rem 0.75rem;
+}
+
+.nav-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 1;
+  transition: var(--nasa-transition);
+}
+
+.admin-sidebar.collapsed .nav-section-title {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.nav-section-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Menu Items */
+.menu-item-container {
+  position: relative;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 0.875rem 1.25rem;
+  margin: 0 0.75rem;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: var(--nasa-transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.05);
+  opacity: 0;
+  transition: var(--nasa-transition-fast);
+}
+
+.menu-item:hover::before {
+  opacity: 1;
+}
+
+.menu-item:hover {
+  color: var(--nasa-white);
+  transform: translateX(4px);
+  box-shadow: var(--nasa-shadow-sm);
+}
+
+.menu-item.active {
+  background: var(--nasa-gradient-accent);
+  color: var(--nasa-white);
+  box-shadow: var(--nasa-shadow-md);
+}
+
+.menu-item.active::before {
+  opacity: 0;
+}
+
+.menu-item-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.menu-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.menu-item-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  flex: 1;
+  opacity: 1;
+  transition: var(--nasa-transition);
+}
+
+.admin-sidebar.collapsed .menu-item-label {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.menu-item-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  background: var(--nasa-gradient-accent);
+  color: var(--nasa-white);
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0 0.5rem;
+  animation: badgePulse 2s ease-in-out infinite;
+  opacity: 1;
+  transition: var(--nasa-transition);
+}
+
+.admin-sidebar.collapsed .menu-item-badge {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.menu-item-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: var(--nasa-transition);
+}
+
+.admin-sidebar.collapsed .menu-item-arrow {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+/* Menu Children */
+.menu-children {
+  margin-left: 1rem;
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+  padding-left: 0.5rem;
+  opacity: 1;
+  transition: var(--nasa-transition);
+}
+
+.admin-sidebar.collapsed .menu-children {
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.menu-child {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  margin: 0.25rem 0;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: var(--nasa-transition-fast);
+  position: relative;
+}
+
+.menu-child::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.05);
+  opacity: 0;
+  transition: var(--nasa-transition-fast);
+  border-radius: 10px;
+}
+
+.menu-child:hover::before {
+  opacity: 1;
+}
+
+.menu-child:hover {
+  color: var(--nasa-white);
+  transform: translateX(4px);
+}
+
+.menu-child.active {
+  background: rgba(252, 61, 33, 0.2);
+  color: var(--nasa-white);
+  border: 1px solid rgba(252, 61, 33, 0.3);
+}
+
+.menu-child.active::before {
+  opacity: 0;
+}
+
+.menu-child-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.menu-child-label {
+  font-size: 0.85rem;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    transform: translateX(-100%);
+    width: 280px;
+  }
+  
+  .admin-sidebar.collapsed {
+    transform: translateX(-100%);
+    width: 280px;
+  }
+  
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-sidebar {
+    top: 60px;
+    height: calc(100vh - 60px);
+    width: 100%;
+    max-width: 320px;
+  }
+  
+  .sidebar-header {
+    padding: 1.25rem;
+  }
+  
+  .sidebar-nav {
+    padding: 0.75rem 0;
+  }
+  
+  .menu-item {
+    margin: 0 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+  
+}
+
+@media (max-width: 480px) {
+  .admin-sidebar {
+    max-width: 100%;
+  }
+  
+  .sidebar-header {
+    padding: 1rem;
+  }
+  
+  .menu-item {
+    margin: 0 0.25rem;
+    padding: 0.625rem 0.75rem;
+  }
+  
+  .menu-children {
+    margin-left: 0.75rem;
+  }
+  
+  .menu-child {
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .admin-sidebar {
+    border-right-width: 2px;
+  }
+  
+  .sidebar-header {
+    border-width: 2px;
+  }
+  
+  .menu-item,
+  .menu-child {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .menu-item.active,
+  .menu-child.active {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .logo-icon,
+  .logo-pulse,
+  .menu-item-badge,
+  .menu-item,
+  .menu-child {
+    animation: none;
+    transition: none;
+  }
+  
+  .menu-item:hover,
+  .menu-child:hover {
+    transform: none;
+  }
+  
+  .admin-sidebar {
+    transition: none;
+  }
+}
+

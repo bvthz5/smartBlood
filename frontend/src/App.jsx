@@ -1,165 +1,114 @@
-import React, { useCallback, useMemo, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
-import { Provider, useDispatch } from "react-redux";
-import { store } from "./store";
-import { AuthProvider } from "./contexts/AuthContext";
-import { initializeAuth } from "./store/slices/adminSlice";
-import Nav from "./components/Nav";
-import ProtectedRoute from "./components/ProtectedRoute";
-import ScrollToTop from "./components/ScrollToTop";
-import { syncHeaderAlertHeights } from "./utils/layoutOffsets";
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from './store';
+import ScrollToTop from './components/ScrollToTop';
 
 // Pages
-import Home from "./pages/Home";
-import About from "./pages/About";
-import FAQ from "./pages/FAQ";
-import Policies from "./pages/Policies";
-import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
+import Home from './pages/Home';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import FAQ from './pages/FAQ';
+import Policies from './pages/Policies';
+import NotFound from './pages/NotFound';
 
-// Donor pages
-import DonorRegister from "./pages/donor/Register";
-import DonorLogin from "./pages/donor/Login";
-import DonorForgot from "./pages/donor/ForgotPassword";
-import DonorChange from "./pages/donor/ChangePassword";
-import DonorDashboard from "./pages/donor/DonorDashboard";     
-import DonorEdit from "./pages/donor/EditProfile";
+// Donor Pages
+import DonorLogin from './pages/donor/Login';
+import DonorRegister from './pages/donor/Register';
+import DonorDashboard from './pages/donor/DonorDashboard';
+import DonorForgotPassword from './pages/donor/ForgotPassword';
+import DonorChangePassword from './pages/donor/ChangePassword';
+import DonorEditProfile from './pages/donor/EditProfile';
 
-// Seeker pages 
-import CreateRequest from "./pages/seeker/SeekerRequest";
+// Seeker Pages
+import SeekerRequest from './pages/seeker/SeekerRequest';
 
-// Admin pages
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminLoginFuturistic from "./pages/admin/AdminLoginFuturistic";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminUsers from "./pages/admin/AdminUsers";
-import AdminSettings from "./pages/admin/AdminSettings";
+// Admin Pages
+import AdminLogin from './pages/admin/jsx/AdminLogin';
+import AdminLoginNew from './pages/admin/AdminLoginNew';
+import AdminDashboardNew from './pages/admin/AdminDashboardNew';
+import DonorManagement from './pages/admin/DonorManagement';
+import HospitalManagement from './pages/admin/HospitalManagement';
+import BloodMatching from './pages/admin/BloodMatching';
+import DonationRequests from './pages/admin/DonationRequests';
+import DonationHistory from './pages/admin/DonationHistory';
 
-// Admin Layout
-import AdminLayout from "./components/admin/AdminLayout";
-import AdminRouteGuard from "./components/AdminRouteGuard";
+// Route Guards
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminRouteGuard from './components/AdminRouteGuard';
 
-// Component to initialize authentication
-function AuthInitializer({ children }) {
-  const dispatch = useDispatch();
-  
-  useEffect(() => {
-    dispatch(initializeAuth());
-  }, [dispatch]);
-  
-  return children;
-}
+import './App.css';
 
 function App() {
-  // Memoize the layout sync function to prevent unnecessary re-renders
-  const handleLayoutSync = useCallback(() => {
-    // Use requestIdleCallback for better performance when available
-    if (window.requestIdleCallback) {
-      requestIdleCallback(() => {
-        syncHeaderAlertHeights();
-      }, { timeout: 1000 });
-    } else {
-      // Fallback to requestAnimationFrame
-      requestAnimationFrame(() => {
-        syncHeaderAlertHeights();
-      });
-    }
-  }, []);
-
-  // Sync layout offsets only once on mount to prevent performance issues
-  React.useEffect(() => {
-    // Delay initial sync to avoid blocking initial render
-    const timeoutId = setTimeout(() => {
-      handleLayoutSync();
-    }, 100);
-    
-    return () => clearTimeout(timeoutId);
-  }, []); // Remove handleLayoutSync dependency to prevent re-runs
-
   return (
     <Provider store={store}>
-      <AuthProvider>
-        <AuthInitializer>
-          <ScrollToTop />
-          <Routes>
-          {/* Admin Routes - Protected with Route Guard */}
-              <Route path="/admin/*" element={
-                <AdminRouteGuard>
-                  <Routes>
-                    <Route path="login" element={<AdminLoginFuturistic />} />
-                    <Route path="*" element={
-                      <AdminLayout>
-                        <Routes>
-                          <Route path="dashboard" element={<AdminDashboard />} />
-                          <Route path="users" element={<AdminUsers />} />
-                          <Route path="settings" element={<AdminSettings />} />
-                          <Route path="" element={<AdminDashboard />} />
-                          <Route path="*" element={<AdminDashboard />} />
-                        </Routes>
-                      </AdminLayout>
-                    } />
-                  </Routes>
-                </AdminRouteGuard>
-              } />
-
-          {/* User Routes - With Nav */}
-          <Route path="/*" element={
-            <div className="site-wrapper">
-              <Nav />
-              <main className="page-container">
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/about-us" element={<About />} />
-                  <Route path="/faq" element={<FAQ />} />
-                  <Route path="/policies" element={<Policies />} />
-                  <Route path="/contact" element={<Contact />} />
-
-                  {/* General Auth Routes */}
-                  <Route path="/register" element={<DonorRegister />} />
-                  <Route path="/login" element={<DonorLogin />} />
-
-                  {/* Donor Routes */}
-                  <Route path="/donor/register" element={<DonorRegister />} />
-                  <Route path="/donor/login" element={<DonorLogin />} />
-                  <Route path="/donor/forgot" element={<DonorForgot />} />
-                  <Route path="/donor/change-password" element={<DonorChange />} />
-                  <Route 
-                    path="/donor/edit" 
-                    element={
-                      <ProtectedRoute>
-                        <DonorEdit />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/donor/dashboard" 
-                    element={
-                      <ProtectedRoute>
-                        <DonorDashboard />
-                      </ProtectedRoute>
-                    } 
-                  />
-
-                  {/* Seeker Routes */}
-                  <Route 
-                    path="/seeker/request" 
-                    element={
-                      <ProtectedRoute>
-                        <CreateRequest />
-                      </ProtectedRoute>
-                    } 
-                  />
-
-                  {/* 404 Route */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </main>
-            </div>
+      <div className="App">
+        <ScrollToTop />
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/policies" element={<Policies />} />
+          
+          {/* Donor Routes */}
+          <Route path="/donor/login" element={<DonorLogin />} />
+          <Route path="/donor/register" element={<DonorRegister />} />
+          <Route path="/donor/forgot-password" element={<DonorForgotPassword />} />
+          <Route path="/donor/dashboard" element={
+            <ProtectedRoute>
+              <DonorDashboard />
+            </ProtectedRoute>
           } />
-          </Routes>
-        </AuthInitializer>
-      </AuthProvider>
+          <Route path="/donor/change-password" element={
+            <ProtectedRoute>
+              <DonorChangePassword />
+            </ProtectedRoute>
+          } />
+          <Route path="/donor/edit-profile" element={
+            <ProtectedRoute>
+              <DonorEditProfile />
+            </ProtectedRoute>
+          } />
+          
+          {/* Seeker Routes */}
+          <Route path="/seeker/request" element={<SeekerRequest />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/login-new" element={<AdminLoginNew />} />
+          <Route path="/admin/dashboard" element={<AdminDashboardNew />} />
+          <Route path="/admin/donors" element={
+            <AdminRouteGuard>
+              <DonorManagement />
+            </AdminRouteGuard>
+          } />
+          <Route path="/admin/hospitals" element={
+            <AdminRouteGuard>
+              <HospitalManagement />
+            </AdminRouteGuard>
+          } />
+          <Route path="/admin/inventory" element={
+            <AdminRouteGuard>
+              <BloodMatching />
+            </AdminRouteGuard>
+          } />
+          <Route path="/admin/requests" element={
+            <AdminRouteGuard>
+              <DonationRequests />
+            </AdminRouteGuard>
+          } />
+          <Route path="/admin/donation-history" element={
+            <AdminRouteGuard>
+              <DonationHistory />
+            </AdminRouteGuard>
+          } />
+          
+          {/* 404 Route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
     </Provider>
   );
 }

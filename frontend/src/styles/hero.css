@@ -34,8 +34,8 @@
   align-items: flex-start;
   justify-content: center;
   overflow: hidden;
-  margin-top: -76px; /* Offset fixed navbar */
-  padding-top: 76px;
+  margin-top: calc(-1 * var(--combined-offset, 124px)); /* Offset fixed navbar + alerts bar */
+  padding-top: var(--combined-offset, 124px); /* Account for navbar + alerts bar */
 }
 
 .hero-banner__background {

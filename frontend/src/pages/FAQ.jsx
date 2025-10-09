@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Nav from '../components/Nav';
+import { syncHeaderAlertHeights } from '../utils/layoutOffsets';
 import '../styles/faq.css';
 
 // Register GSAP plugins
@@ -32,6 +34,11 @@ export default function FAQ() {
 
     window.addEventListener('languageChanged', handleLanguageChange);
     return () => window.removeEventListener('languageChanged', handleLanguageChange);
+  }, []);
+
+  // Sync layout offsets when component mounts
+  useEffect(() => {
+    syncHeaderAlertHeights();
   }, []);
 
   // Animation setup
@@ -197,7 +204,9 @@ export default function FAQ() {
   });
 
   return (
-    <main className="faq-page">
+    <>
+      <Nav />
+      <main className="faq-page">
       {/* Hero Section */}
       <section ref={heroRef} className="faq-hero">
         <div className="container">
@@ -309,6 +318,7 @@ export default function FAQ() {
           </div>
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }
