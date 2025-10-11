@@ -27,6 +27,8 @@ import SeekerSettings from './pages/seeker/Settings';
 import SeekerHospitalProfile from './pages/seeker/HospitalProfile';
 import SeekerRouteGuard from './components/seeker/SeekerRouteGuard';
 import SeekerTempGuard from './components/seeker/SeekerTempGuard';
+import SeekerForgotPassword from './pages/seeker/SeekerForgotPassword';
+import SeekerResetPassword from './pages/seeker/SeekerResetPassword';
 
 // Admin Pages
 import AdminLogin from './pages/admin/AdminLogin';
@@ -61,6 +63,8 @@ function App() {
           
           {/* Seeker Routes */}
           <Route path="/seeker/login" element={<SeekerLogin />} />
+          <Route path="/seeker/forgot-password" element={<SeekerForgotPassword />} />
+          <Route path="/seeker/reset-password" element={<SeekerResetPassword />} />
           <Route path="/seeker/activate-account" element={
             <SeekerTempGuard>
               <ForceChangePassword />

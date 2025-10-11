@@ -40,6 +40,15 @@ export default function SeekerLogin() {
         // full access
         if (data.access_token) localStorage.setItem('seeker_token', data.access_token);
         if (data.refresh_token) localStorage.setItem('seeker_refresh_token', data.refresh_token);
+        if (data.user) {
+          if (data.user.id !== undefined) localStorage.setItem('seeker_user_id', String(data.user.id));
+          if (data.user.role) localStorage.setItem('seeker_user_role', data.user.role);
+          if (data.user.hospital_id !== undefined && data.user.hospital_id !== null) {
+            localStorage.setItem('seeker_hospital_id', String(data.user.hospital_id));
+          }
+          if (data.user.email) localStorage.setItem('seeker_user_email', data.user.email);
+          if (data.user.phone) localStorage.setItem('seeker_user_phone', data.user.phone);
+        }
         localStorage.setItem('user_type', 'seeker');
         navigate('/seeker/dashboard');
       }
@@ -119,10 +128,6 @@ export default function SeekerLogin() {
             <div className="form-footer">
               <Link to="/seeker/forgot-password" className="forgot-password">
                 Forgot your password?
-              </Link>
-              <span className="divider">|</span>
-              <Link to="/seeker/register" className="register-link">
-                Create a new account
               </Link>
             </div>
           </form>

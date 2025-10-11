@@ -5,6 +5,14 @@ const seekerService = {
     const res = await api.post('/api/auth/seeker-login', { email_or_phone, password });
     return res.data;
   },
+  forgotPassword: async (email_or_phone) => {
+    const res = await api.post('/api/auth/forgot-password', { email_or_phone });
+    return res.data;
+  },
+  resetPassword: async (token, new_password) => {
+    const res = await api.post('/api/auth/reset-password', { token, new_password });
+    return res.data;
+  },
   activate: async (old_password, new_password) => {
     const temp = typeof window !== 'undefined' ? localStorage.getItem('seeker_temp_token') : null;
     const res = await api.post('/api/seeker/activate', { old_password, new_password }, {
