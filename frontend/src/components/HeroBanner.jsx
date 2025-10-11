@@ -292,7 +292,9 @@ export default function HeroBanner({ language }) {
             transform: "translateX(30px)",
             fontSize: "2.8rem",
             fontWeight: "800",
-            lineHeight: "1.2"
+            lineHeight: "1.2",
+            marginTop: "4px",
+            marginLeft: "10px"
           }}>
             {language === "en"
               ? "Give Blood. Save Lives."
@@ -306,7 +308,8 @@ export default function HeroBanner({ language }) {
               fontSize: "1.2rem",
               fontWeight: "500",
               lineHeight: "1.4",
-              marginBottom: "2rem"
+              marginBottom: "2rem",
+              marginRight: "662px"
             }}
           >
             {language === "en"
@@ -323,7 +326,7 @@ export default function HeroBanner({ language }) {
               className="btn btn--primary btn--large"
               style={{ transform: "translateX(5px) translateY(5px)" }}
             >
-              {language === "en" ? "Find Blood" : "രക്തം കണ്ടെത്തുക"}
+              {language === "en" ? "Become a Donor" : "ഒരു ദാനിയായി മാറുക"}
             </Link>
 
             <Link
@@ -332,7 +335,8 @@ export default function HeroBanner({ language }) {
               style={{ 
                 transform: "translateX(10px) translateY(5px)",
                 background: "#9c02021c",
-                transition: "all 0.3s ease"
+                transition: "all 0.3s ease",
+                marginLeft: "10px"
               }}
               onMouseEnter={(e) => {
                 e.target.style.background = "rgb(240 0 0 / 78%)";

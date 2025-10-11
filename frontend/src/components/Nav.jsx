@@ -176,6 +176,13 @@ export default function Nav() {
                   className="header__dropdown-item"
                   onClick={() => setLoginDropdownOpen(false)}
                 >
+                  Donor Login
+                </NavLink>
+                <NavLink 
+                  to="/seeker/login" 
+                  className="header__dropdown-item"
+                  onClick={() => setLoginDropdownOpen(false)}
+                >
                   {language === 'en' ? 'Seeker Login' : 'അന്വേഷകൻ ലോഗിൻ'}
                 </NavLink>
                 <NavLink 
@@ -301,7 +308,14 @@ export default function Nav() {
             </button>
             <div className="header__dropdown-menu">
               <NavLink 
-                to="/seeker/request" 
+                to="/seeker/login" 
+                className="header__dropdown-item"
+                onClick={() => setLoginDropdownOpen(false)}
+              >
+                Donor Login
+              </NavLink>
+              <NavLink 
+                to="/seeker/login" 
                 className="header__dropdown-item"
                 onClick={() => setLoginDropdownOpen(false)}
               >
