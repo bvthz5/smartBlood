@@ -27,6 +27,7 @@ export default function SeekerRequest(){
           placeholder="Blood group (e.g. B+)" 
           value={form.blood_group} 
           onChange={e=>setForm({...form,blood_group:e.target.value})} 
+          autoComplete="off"
         />
         <input 
           id="seeker-units"
@@ -56,6 +57,7 @@ export default function SeekerRequest(){
           placeholder="Location/hospital" 
           value={form.location} 
           onChange={e=>setForm({...form,location:e.target.value})} 
+          autoComplete="off"
         />
         <button 
           id="seeker-submit"

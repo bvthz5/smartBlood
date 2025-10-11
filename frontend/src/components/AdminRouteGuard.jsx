@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { createBatchedStateSetter, createCleanupManager } from "../utils/performanceOptimizer";
+import { isNavigating, resetNavigationState } from "../utils/navigationOptimizer";
 
 const AdminRouteGuard = ({ children }) => {
   const navigate = useNavigate();
@@ -13,12 +15,16 @@ const AdminRouteGuard = ({ children }) => {
   const lastPathRef = useRef(location.pathname);
   const authCheckTimeoutRef = useRef(null);
   
-  // Stable state for rendering
+  // Stable state for rendering with batched updates
   const [renderState, setRenderState] = useState({
     showLoading: true,
     showContent: false,
     isInitialized: false
   });
+  
+  // Create batched state setter to prevent reflows
+  const batchedSetRenderState = useRef(createBatchedStateSetter(setRenderState)).current;
+  const cleanupManager = useRef(createCleanupManager()).current;
 
   // Enhanced debounced navigation to prevent rapid redirects
   const debouncedNavigate = useCallback((path, options = {}) => {
@@ -77,52 +83,59 @@ const AdminRouteGuard = ({ children }) => {
 
     const isAuth = isAuthenticated && user;
     const isLoginPage = location.pathname === "/admin/login";
+    const isAdminPage = location.pathname.startsWith("/admin/");
+
+    // Skip authentication check for navigation within admin pages or during navigation
+    if ((isAuth && isAdminPage && !isLoginPage) || isNavigating()) {
+      batchedSetRenderState({ showLoading: false, showContent: true, isInitialized: true });
+      return;
+    }
 
     // Use requestIdleCallback for better performance
     if (window.requestIdleCallback) {
       authCheckTimeoutRef.current = requestIdleCallback(() => {
         if (!isAuth) {
           // Not authenticated
-          if (!isLoginPage) {
-            setRenderState({ showLoading: false, showContent: false, isInitialized: true });
+          if (!isLoginPage && isAdminPage) {
+            batchedSetRenderState({ showLoading: false, showContent: false, isInitialized: true });
             debouncedNavigate("/admin/login");
             return;
           }
           // On login page and not authenticated - show login
-          setRenderState({ showLoading: false, showContent: true, isInitialized: true });
+          batchedSetRenderState({ showLoading: false, showContent: true, isInitialized: true });
         } else {
           // Authenticated
           if (isLoginPage) {
-            setRenderState({ showLoading: false, showContent: false, isInitialized: true });
+            batchedSetRenderState({ showLoading: false, showContent: false, isInitialized: true });
             debouncedNavigate("/admin/dashboard");
             return;
           }
           // On protected page and authenticated - show content
-          setRenderState({ showLoading: false, showContent: true, isInitialized: true });
+          batchedSetRenderState({ showLoading: false, showContent: true, isInitialized: true });
         }
-      }, { timeout: 100 });
+      }, { timeout: 50 });
     } else {
       authCheckTimeoutRef.current = setTimeout(() => {
         if (!isAuth) {
           // Not authenticated
-          if (!isLoginPage) {
-            setRenderState({ showLoading: false, showContent: false, isInitialized: true });
+          if (!isLoginPage && isAdminPage) {
+            batchedSetRenderState({ showLoading: false, showContent: false, isInitialized: true });
             debouncedNavigate("/admin/login");
             return;
           }
           // On login page and not authenticated - show login
-          setRenderState({ showLoading: false, showContent: true, isInitialized: true });
+          batchedSetRenderState({ showLoading: false, showContent: true, isInitialized: true });
         } else {
           // Authenticated
           if (isLoginPage) {
-            setRenderState({ showLoading: false, showContent: false, isInitialized: true });
+            batchedSetRenderState({ showLoading: false, showContent: false, isInitialized: true });
             debouncedNavigate("/admin/dashboard");
             return;
           }
           // On protected page and authenticated - show content
-          setRenderState({ showLoading: false, showContent: true, isInitialized: true });
+          batchedSetRenderState({ showLoading: false, showContent: true, isInitialized: true });
         }
-      }, 100);
+      }, 50);
     }
   }, [isAuthenticated, user, isLoading, location.pathname, debouncedNavigate, renderState.isInitialized]);
 
@@ -150,12 +163,16 @@ const AdminRouteGuard = ({ children }) => {
     
     // Cleanup timeout on unmount
     return () => {
-      if (authCheckTimeoutRef.current) {
-        clearTimeout(authCheckTimeoutRef.current);
-      }
-      clearTimeout(maxLoadingTimeout);
+      cleanupManager.add(() => {
+        if (authCheckTimeoutRef.current) {
+          clearTimeout(authCheckTimeoutRef.current);
+        }
+        clearTimeout(maxLoadingTimeout);
+        resetNavigationState();
+      });
+      cleanupManager.cleanup();
     };
-  }, [checkAuthentication, renderState.showLoading]);
+  }, [isAuthenticated, user, isLoading, location.pathname]);
 
   // Enhanced loading state with custom CSS
   if (renderState.showLoading || isCheckingRef.current) {

@@ -3,8 +3,8 @@
  * Handles secure token storage and validation
  */
 
-const TOKEN_KEY = 'adminToken';
-const REFRESH_TOKEN_KEY = 'adminRefreshToken';
+const TOKEN_KEY = 'admin_access_token';
+const REFRESH_TOKEN_KEY = 'admin_refresh_token';
 
 export const tokenManager = {
   // Get token from localStorage

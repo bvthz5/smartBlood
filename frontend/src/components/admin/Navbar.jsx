@@ -74,7 +74,9 @@ const Navbar = ({ onToggleSidebar, sidebarCollapsed }) => {
         console.log('Navigate to settings');
         break;
       case 'logout':
-        localStorage.removeItem('adminToken');
+        localStorage.removeItem('admin_access_token');
+        localStorage.removeItem('admin_refresh_token');
+        localStorage.removeItem('user_type');
         window.location.href = '/admin/login';
         break;
       default:
@@ -82,35 +84,42 @@ const Navbar = ({ onToggleSidebar, sidebarCollapsed }) => {
     }
   };
 
-  // Close dropdowns when clicking outside
+  // Close dropdowns when clicking outside - Optimized to prevent reflows
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowProfileDropdown(false);
-        setShowNotifications(false);
-      }
-    };
-
-    // Use throttled mouse handler for better performance
-    let ticking = false;
-    const throttledHandleClickOutside = (event) => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          handleClickOutside(event);
-          ticking = false;
-        });
-        ticking = true;
+        // Use requestIdleCallback to prevent blocking the main thread
+        if (window.requestIdleCallback) {
+          requestIdleCallback(() => {
+            setShowProfileDropdown(false);
+            setShowNotifications(false);
+          });
+        } else {
+          setTimeout(() => {
+            setShowProfileDropdown(false);
+            setShowNotifications(false);
+          }, 0);
+        }
       }
     };
     
-    document.addEventListener('mousedown', throttledHandleClickOutside, { passive: true });
-    return () => document.removeEventListener('mousedown', throttledHandleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside, { passive: true });
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Focus search input when search is shown
+  // Focus search input when search is shown - Optimized to prevent reflows
   useEffect(() => {
     if (showSearch && searchRef.current) {
-      searchRef.current.focus();
+      // Use requestIdleCallback to prevent blocking the main thread
+      if (window.requestIdleCallback) {
+        requestIdleCallback(() => {
+          searchRef.current?.focus();
+        });
+      } else {
+        setTimeout(() => {
+          searchRef.current?.focus();
+        }, 0);
+      }
     }
   }, [showSearch]);
 
@@ -150,6 +159,7 @@ const Navbar = ({ onToggleSidebar, sidebarCollapsed }) => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search donors, hospitals, requests..."
                     className="search-input"
+                    autoComplete="off"
                   />
                   <button
                     type="button"

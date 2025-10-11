@@ -57,8 +57,15 @@ export default function AlertsBar({ language }) {
 
     fetchAlerts()
     
-    // Refresh alerts every 5 minutes
-    const refreshInterval = setInterval(fetchAlerts, 5 * 60 * 1000)
+    // Refresh alerts every 5 minutes - optimized to prevent performance issues
+    const refreshInterval = setInterval(() => {
+      // Use requestIdleCallback to prevent blocking the main thread
+      if (window.requestIdleCallback) {
+        requestIdleCallback(fetchAlerts, { timeout: 1000 });
+      } else {
+        setTimeout(fetchAlerts, 0);
+      }
+    }, 5 * 60 * 1000)
     
     return () => clearInterval(refreshInterval)
   }, [language])

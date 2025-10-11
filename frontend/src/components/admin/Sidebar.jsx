@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
+import { optimizedNavigate } from '../../utils/navigationOptimizer';
 import {
   LayoutDashboard,
   Users,
@@ -90,10 +91,10 @@ const Sidebar = ({ collapsed, onToggle, isOpen, onClose }) => {
     }
   }, [location.pathname]);
 
-  // Handle menu item click - optimized with useCallback
+  // Handle menu item click - optimized to prevent reflows
   const handleMenuItemClick = useCallback((item) => {
     setActiveItem(item.id);
-    navigate(item.path);
+    optimizedNavigate(navigate, item.path);
     if (isOpen) {
       onClose();
     }

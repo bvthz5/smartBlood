@@ -7,7 +7,7 @@ export default function ProtectedRoute({ children }) {
   
   // Check if user is authenticated and has a valid token
   if (!isAuthenticated || !user) {
-    return <Navigate to="/donor/login" replace />;
+    return <Navigate to="/seeker/login" replace />;
   }
   
   return children;

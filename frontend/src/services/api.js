@@ -14,7 +14,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
+      const token = localStorage.getItem('token') || localStorage.getItem('admin_access_token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -33,12 +33,12 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('token');
-        localStorage.removeItem('adminToken');
+        localStorage.removeItem('admin_access_token');
         // Check if it's an admin route
         if (window.location.pathname.startsWith('/admin')) {
           window.location.href = '/admin/login';
         } else {
-          window.location.href = '/donor/login';
+          window.location.href = '/seeker/login';
         }
       }
     }
@@ -57,6 +57,10 @@ export async function verifyOtp(payload) {
 
 export async function login(payload) {
   return api.post("/api/auth/login", payload);
+}
+
+export async function loginSeeker(payload) {
+  return api.post("/api/auth/seeker-login", payload);
 }
 
 export async function refreshToken(refreshToken) {

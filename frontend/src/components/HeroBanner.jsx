@@ -74,10 +74,20 @@ export default function HeroBanner({ language }) {
   useEffect(() => {
     let timeoutId;
     const scheduleNext = () => {
-      timeoutId = setTimeout(() => {
-        setCurrentImage((prev) => (prev + 1) % images.length);
-        scheduleNext(); // Schedule the next transition
-      }, 5000);
+      // Use requestIdleCallback to prevent blocking the main thread
+      if (window.requestIdleCallback) {
+        requestIdleCallback(() => {
+          timeoutId = setTimeout(() => {
+            setCurrentImage((prev) => (prev + 1) % images.length);
+            scheduleNext(); // Schedule the next transition
+          }, 5000);
+        }, { timeout: 1000 });
+      } else {
+        timeoutId = setTimeout(() => {
+          setCurrentImage((prev) => (prev + 1) % images.length);
+          scheduleNext(); // Schedule the next transition
+        }, 5000);
+      }
     };
     
     scheduleNext();
@@ -309,15 +319,15 @@ export default function HeroBanner({ language }) {
             style={{ transform: "translateX(20px) translateY(5px)" }}
           >
             <Link
-              to="/donor/register"
+              to="/seeker/login"
               className="btn btn--primary btn--large"
               style={{ transform: "translateX(5px) translateY(5px)" }}
             >
-              {language === "en" ? "Become a Donor" : "ഒരു ദാനിയായി മാറുക"}
+              {language === "en" ? "Find Blood" : "രക്തം കണ്ടെത്തുക"}
             </Link>
 
             <Link
-              to="/seeker/request"
+              to="/seeker/login"
               className="btn btn--outline btn--large"
               style={{ 
                 transform: "translateX(10px) translateY(5px)",

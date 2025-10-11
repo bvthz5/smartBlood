@@ -12,21 +12,17 @@ import FAQ from './pages/FAQ';
 import Policies from './pages/Policies';
 import NotFound from './pages/NotFound';
 
-// Donor Pages
-import DonorLogin from './pages/donor/Login';
-import DonorRegister from './pages/donor/Register';
-import DonorDashboard from './pages/donor/DonorDashboard';
-import DonorForgotPassword from './pages/donor/ForgotPassword';
-import DonorChangePassword from './pages/donor/ChangePassword';
-import DonorEditProfile from './pages/donor/EditProfile';
+// Donor Pages - Removed (not ready to start)
 
 // Seeker Pages
 import SeekerRequest from './pages/seeker/SeekerRequest';
+import SeekerLogin from './pages/seeker/SeekerLogin';
+import SeekerDashboard from './pages/seeker/SeekerDashboard';
 
 // Admin Pages
-import AdminLogin from './pages/admin/jsx/AdminLogin';
-import AdminLoginNew from './pages/admin/AdminLoginNew';
+import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboardNew from './pages/admin/AdminDashboardNew';
+import AdminForgotPassword from './pages/admin/AdminForgotPassword';
 import DonorManagement from './pages/admin/DonorManagement';
 import HospitalManagement from './pages/admin/HospitalManagement';
 import BloodMatching from './pages/admin/BloodMatching';
@@ -52,38 +48,18 @@ function App() {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/policies" element={<Policies />} />
           
-          {/* Donor Routes */}
-          <Route path="/donor/login" element={<DonorLogin />} />
-          <Route path="/donor/register" element={<DonorRegister />} />
-          <Route path="/donor/forgot-password" element={<DonorForgotPassword />} />
-          <Route path="/donor/dashboard" element={
-            <ProtectedRoute>
-              <DonorDashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="/donor/change-password" element={
-            <ProtectedRoute>
-              <DonorChangePassword />
-            </ProtectedRoute>
-          } />
-          <Route path="/donor/edit-profile" element={
-            <ProtectedRoute>
-              <DonorEditProfile />
-            </ProtectedRoute>
-          } />
-          <Route path="/donor/edit-profile/:encodedId" element={
-            <ProtectedRoute>
-              <DonorEditProfile />
-            </ProtectedRoute>
-          } />
+          {/* Donor Routes - Removed (not ready to start) */}
           
           {/* Seeker Routes */}
+          <Route path="/seeker/login" element={<SeekerLogin />} />
+          <Route path="/seeker/dashboard" element={<SeekerDashboard />} />
           <Route path="/seeker/request" element={<SeekerRequest />} />
           
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/login-new" element={<AdminLoginNew />} />
           <Route path="/admin/dashboard" element={<AdminDashboardNew />} />
+          <Route path="/admin/forgot-password" element={<AdminForgotPassword />} />
+          <Route path="/admin/dashboard-new" element={<AdminDashboardNew />} />
           <Route path="/admin/donors" element={
             <AdminRouteGuard>
               <DonorManagement />

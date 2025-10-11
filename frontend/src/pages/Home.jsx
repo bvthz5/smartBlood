@@ -61,8 +61,15 @@ function StatsSection({ language }) {
 
     fetchStats()
     
-    // Refresh stats every 10 minutes
-    const refreshInterval = setInterval(fetchStats, 10 * 60 * 1000)
+    // Refresh stats every 10 minutes - optimized to prevent performance issues
+    const refreshInterval = setInterval(() => {
+      // Use requestIdleCallback to prevent blocking the main thread
+      if (window.requestIdleCallback) {
+        requestIdleCallback(fetchStats, { timeout: 1000 });
+      } else {
+        setTimeout(fetchStats, 0);
+      }
+    }, 10 * 60 * 1000)
     
     return () => clearInterval(refreshInterval)
   }, [])
@@ -768,7 +775,7 @@ export default function Home() {
               <h3>{language === 'en' ? 'Donate Blood' : 'രക്തം ദാനം ചെയ്യുക'}</h3>
               <ul>
                 <li><Link to="/camps">{language === 'en' ? 'Camps' : 'ക്യാമ്പുകൾ'}</Link></li>
-                <li><Link to="/donor/login">{language === 'en' ? 'Donor Login' : 'ദാനി ലോഗിൻ'}</Link></li>
+                <li><Link to="/seeker/login">{language === 'en' ? 'Seeker Login' : 'അന്വേഷകൻ ലോഗിൻ'}</Link></li>
                 <li><Link to="/how-to-donate">{language === 'en' ? 'How to Donate' : 'എങ്ങനെ ദാനം ചെയ്യാം'}</Link></li>
               </ul>
             </div>

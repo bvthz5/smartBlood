@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { optimizedNavigate } from '../../utils/navigationOptimizer';
 import {
   Users,
   Building2,
@@ -28,10 +29,22 @@ const AdminSidebar = ({ collapsed, onToggle }) => {
   });
 
   const toggleSection = (section) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
+    // Use requestIdleCallback to prevent blocking the main thread
+    if (window.requestIdleCallback) {
+      requestIdleCallback(() => {
+        setExpandedSections(prev => ({
+          ...prev,
+          [section]: !prev[section]
+        }));
+      });
+    } else {
+      setTimeout(() => {
+        setExpandedSections(prev => ({
+          ...prev,
+          [section]: !prev[section]
+        }));
+      }, 0);
+    }
   };
 
   const menuItems = [
@@ -104,7 +117,7 @@ const AdminSidebar = ({ collapsed, onToggle }) => {
   ];
 
   const handleNavigation = (path) => {
-    navigate(path);
+    optimizedNavigate(navigate, path);
   };
 
   const isActive = (path) => {

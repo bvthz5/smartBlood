@@ -25,6 +25,7 @@
     radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
   animation: backgroundShift 20s ease-in-out infinite;
+  will-change: background-position;
 }
 
 /* Blood Drops Animation */
@@ -106,6 +107,7 @@
   animation: logoPulse 3s ease-in-out infinite;
   position: relative;
   z-index: 2;
+  will-change: transform;
 }
 
 .logo-pulse {

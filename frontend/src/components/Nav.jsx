@@ -141,8 +141,7 @@ export default function Nav() {
                 </NavLink>
               </div>
             </div>
-            <NavLink className="header__link" to="/seeker/request">Find Blood</NavLink>
-            <NavLink className="header__link" to="/donor/register">Donate Blood</NavLink>
+            <NavLink className="header__link" to="/seeker/login">Find Blood</NavLink>
           </nav>
 
           <div className="header__actions">
@@ -173,14 +172,7 @@ export default function Nav() {
               </button>
               <div className="header__dropdown-menu">
                 <NavLink 
-                  to="/donor/login" 
-                  className="header__dropdown-item"
-                  onClick={() => setLoginDropdownOpen(false)}
-                >
-                  {language === 'en' ? 'Donor Login' : 'ദാതാവ് ലോഗിൻ'}
-                </NavLink>
-                <NavLink 
-                  to="/seeker/request" 
+                  to="/seeker/login" 
                   className="header__dropdown-item"
                   onClick={() => setLoginDropdownOpen(false)}
                 >
@@ -215,9 +207,7 @@ export default function Nav() {
             <NavLink className="header__link" to="/policies" onClick={() => setOpen(false)}>Policies</NavLink>
             <NavLink className="header__link" to="/contact" onClick={() => setOpen(false)}>Contact</NavLink>
             <NavLink className="header__link" to="/seeker/request" onClick={() => setOpen(false)}>Find Blood</NavLink>
-            <NavLink className="header__link" to="/donor/register" onClick={() => setOpen(false)}>Donate Blood</NavLink>
-            <NavLink className="btn btn--outline" to="/donor/login" onClick={() => setOpen(false)}>Donor Login</NavLink>
-            <NavLink className="btn btn--outline" to="/seeker/request" onClick={() => setOpen(false)}>Seeker Login</NavLink>
+            <NavLink className="btn btn--outline" to="/seeker/login" onClick={() => setOpen(false)}>Seeker Login</NavLink>
           </div>
         )}
       </header>
@@ -281,7 +271,6 @@ export default function Nav() {
             </div>
           </div>
           <NavLink className="header__link" to="/seeker/request">Find Blood</NavLink>
-          <NavLink className="header__link" to="/donor/register">Donate Blood</NavLink>
         </nav>
 
         <div className="header__actions">
@@ -311,13 +300,6 @@ export default function Nav() {
               <span className="header__dropdown-arrow">▼</span>
             </button>
             <div className="header__dropdown-menu">
-              <NavLink 
-                to="/donor/login" 
-                className="header__dropdown-item"
-                onClick={() => setLoginDropdownOpen(false)}
-              >
-                {language === 'en' ? 'Donor Login' : 'ദാതാവ് ലോഗിൻ'}
-              </NavLink>
               <NavLink 
                 to="/seeker/request" 
                 className="header__dropdown-item"
@@ -354,9 +336,7 @@ export default function Nav() {
           <NavLink className="header__link" to="/policies" onClick={() => setOpen(false)}>Policies</NavLink>
           <NavLink className="header__link" to="/contact" onClick={() => setOpen(false)}>Contact</NavLink>
           <NavLink className="header__link" to="/seeker/request" onClick={() => setOpen(false)}>Find Blood</NavLink>
-          <NavLink className="header__link" to="/donor/register" onClick={() => setOpen(false)}>Donate Blood</NavLink>
-          <NavLink className="btn btn--outline" to="/donor/login" onClick={() => setOpen(false)}>Donor Login</NavLink>
-          <NavLink className="btn btn--outline" to="/seeker/request" onClick={() => setOpen(false)}>Seeker Login</NavLink>
+          <NavLink className="btn btn--outline" to="/seeker/login" onClick={() => setOpen(false)}>Seeker Login</NavLink>
         </div>
       )}
     </header>

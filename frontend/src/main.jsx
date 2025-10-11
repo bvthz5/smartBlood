@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import App from "./App";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import "./index.css"; // Keep the original index.css import
 // global styles (was tailwind previously)
 import './styles/global.css';
@@ -61,14 +62,16 @@ const renderApp = () => {
   // Use React 18's concurrent features for better performance
   root.render(
     <React.StrictMode>
-      <BrowserRouter
-        future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true
-        }}
-      >
-        <App />
-      </BrowserRouter>
+      <ThemeProvider>
+        <BrowserRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true
+          }}
+        >
+          <App />
+        </BrowserRouter>
+      </ThemeProvider>
     </React.StrictMode>
   );
 };

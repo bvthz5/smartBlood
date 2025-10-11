@@ -69,7 +69,7 @@ export default function AuthDropdown() {
           onKeyDown={handleKeyDown}
         >
           <Link
-            to="/donor/login"
+            to="/seeker/login"
             className="auth-dropdown__item"
             role="menuitem"
             onClick={handleMenuItemClick}

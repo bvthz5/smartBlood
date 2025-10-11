@@ -74,7 +74,7 @@ def verify_otp_route():
     access = create_access_token(identity=user.id, expires_delta=timedelta(minutes=current_app.config.get("ACCESS_EXPIRES_MINUTES", 15)))
     refresh = create_refresh_token(identity=user.id, expires_delta=timedelta(days=current_app.config.get("REFRESH_EXPIRES_DAYS", 7)))
     # TODO: Implement refresh token storage with new schema
-    return jsonify({"access_token": access, "refresh_token": refresh, "user": {"id": user.id, "name": user.first_name}}), 200
+    return jsonify({"access_token": access, "refresh_token": refresh, "user": {"id": user.id, "name": user.first_name}})
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
@@ -96,6 +96,44 @@ def login():
     # TODO: Implement refresh token storage with new schema
     return jsonify({"access_token": access, "refresh_token": refresh, "user": {"id": user.id, "name": user.first_name}})
 
+@auth_bp.route("/seeker-login", methods=["POST"])
+def seeker_login():
+    """Seeker login endpoint - allows login for any user type (donor, staff, admin)"""
+    data = request.get_json() or {}
+    ident = data.get("email_or_phone")
+    password = data.get("password")
+    
+    if not ident or not password:
+        return jsonify({"error": "email_or_phone and password required"}), 400
+    
+    user = None
+    if "@" in ident:
+        user = User.query.filter_by(email=ident).first()
+    else:
+        user = User.query.filter_by(phone=ident).first()
+    
+    if not user or not verify_password(password, user.password_hash):
+        return jsonify({"error": "invalid credentials"}), 401
+    
+    if not user.is_phone_verified:
+        return jsonify({"error": "account not verified"}), 403
+    
+    # Create tokens
+    access = create_access_token(identity=user.id, expires_delta=timedelta(minutes=current_app.config.get("ACCESS_EXPIRES_MINUTES", 15)))
+    refresh = create_refresh_token(identity=user.id, expires_delta=timedelta(days=current_app.config.get("REFRESH_EXPIRES_DAYS", 7)))
+    
+    return jsonify({
+        "access_token": access, 
+        "refresh_token": refresh, 
+        "user": {
+            "id": user.id, 
+            "name": user.first_name,
+            "role": user.role,
+            "email": user.email,
+            "phone": user.phone
+        }
+    })
+
 # TODO: Implement refresh endpoint with new schema
 # @auth_bp.route("/refresh", methods=["POST"])
 # def refresh():
@@ -111,37 +149,28 @@ def forgot_password():
         user = User.query.filter_by(email=ident).first()
     else:
         user = User.query.filter_by(phone=ident).first()
+    
     if user:
-        otp = generate_otp()
-        code_h = otp_hash(otp)
-        expires = datetime.utcnow() + timedelta(minutes=current_app.config.get("ACCESS_EXPIRES_MINUTES"))
-        sess = OTPSession(user_id=user.id, otp_hash=code_h, channel="phone" if "@" not in ident else "email", destination=ident, expires_at=expires)
-        db.session.add(sess)
-        db.session.commit()
-        logger.info(f"DEV password-reset OTP for {ident}: {otp}")
-    # always return generic response
-    return jsonify({"message":"If account exists, password reset OTP sent"}), 200
+        # Send password reset instructions email
+        if "@" in ident:
+            try:
+                from app.services.email_service import email_service
+                # Generate a simple reset token (in production, use a proper JWT token)
+                reset_token = f"reset_{user.id}_{datetime.utcnow().timestamp()}"
+                email_sent = email_service.send_password_reset_email(ident, reset_token, user.first_name or "Admin")
+                if email_sent:
+                    logger.info(f"Password reset instructions email sent to {ident}")
+                else:
+                    logger.error(f"Failed to send password reset instructions email to {ident}")
+            except Exception as e:
+                logger.error(f"Error sending password reset email to {ident}: {str(e)}")
+        else:
+            # For phone numbers, log the request
+            logger.info(f"Password reset requested for phone {ident}")
+    
+    # Always return generic response for security
+    return jsonify({"message": "If account exists, password reset instructions have been sent"}), 200
 
-@auth_bp.route("/reset-password", methods=["POST"])
-def reset_password():
-    data = request.get_json() or {}
-    user_id = data.get("user_id")
-    otp = data.get("otp")
-    new_password = data.get("new_password")
-    sess = OTPSession.query.filter_by(user_id=user_id, channel="phone", used=False).order_by(OTPSession.created_at.desc()).first()
-    if not sess or sess.expires_at < datetime.utcnow():
-        return jsonify({"error":"invalid or expired otp"}), 400
-    if not verify_otp(otp, sess.otp_hash):
-        sess.attempts_left = (sess.attempts_left or 0) + 1
-        db.session.commit()
-        return jsonify({"error":"invalid otp"}), 400
-    sess.used = True
-    user = User.query.get(user_id)
-    user.password_hash = hash_password(new_password)
-    # revoke all refresh tokens
-    RefreshToken.query.filter_by(user_id=user.id).update({"revoked": True})
-    db.session.commit()
-    return jsonify({"message":"password reset success"}), 200
 
 @auth_bp.route("/change-password", methods=["POST"])
 def change_password():

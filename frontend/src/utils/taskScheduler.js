@@ -264,12 +264,24 @@ export const getSchedulerMetrics = () => {
   };
 };
 
-// Initialize task scheduler monitoring
+// Initialize task scheduler monitoring - optimized to prevent performance issues
 if (process.env.NODE_ENV === 'development') {
   setInterval(() => {
-    const status = taskScheduler.getStatus();
-    if (status.queueLength > 50) {
-      console.warn(`Task scheduler queue is getting long: ${status.queueLength} tasks`);
+    // Use requestIdleCallback to prevent blocking the main thread
+    if (window.requestIdleCallback) {
+      requestIdleCallback(() => {
+        const status = taskScheduler.getStatus();
+        if (status.queueLength > 50) {
+          console.warn(`Task scheduler queue is getting long: ${status.queueLength} tasks`);
+        }
+      }, { timeout: 1000 });
+    } else {
+      setTimeout(() => {
+        const status = taskScheduler.getStatus();
+        if (status.queueLength > 50) {
+          console.warn(`Task scheduler queue is getting long: ${status.queueLength} tasks`);
+        }
+      }, 0);
     }
   }, 5000);
 }
