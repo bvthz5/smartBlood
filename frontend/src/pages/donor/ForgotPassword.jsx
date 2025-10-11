@@ -46,14 +46,20 @@ export default function ForgotPassword(){
         <h2 className="text-lg font-semibold mb-3">Reset Password</h2>
         <form onSubmit={reset}>
           <input 
+            id="forgot-otp"
+            name="otp"
             className="w-full border p-2 rounded mb-2" 
             placeholder="OTP" 
             value={otp} 
             onChange={e=>setOtp(e.target.value)}
             autoComplete="one-time-code"
             inputMode="numeric"
+            type="text"
+            maxLength="6"
           />
           <input 
+            id="forgot-new-password"
+            name="new_password"
             className="w-full border p-2 rounded mb-2" 
             type="password" 
             placeholder="New password" 
@@ -61,7 +67,13 @@ export default function ForgotPassword(){
             onChange={e=>setNewPassword(e.target.value)}
             autoComplete="new-password"
           />
-          <button className="w-full bg-green-600 text-white p-2 rounded">Reset</button>
+          <button 
+            id="forgot-reset"
+            type="submit"
+            className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700 transition-colors"
+          >
+            Reset
+          </button>
         </form>
       </div>
     );
@@ -72,14 +84,22 @@ export default function ForgotPassword(){
       <h2 className="text-lg font-semibold mb-3">Forgot Password</h2>
       <form onSubmit={sendOtp}>
         <input 
+          id="forgot-email-phone"
+          name="email_or_phone"
           className="w-full border p-2 rounded mb-2" 
           placeholder="Email or Phone" 
           value={ident} 
           onChange={e=>setIdent(e.target.value)}
           autoComplete="username"
-          type="email"
+          type="text"
         />
-        <button className="w-full bg-blue-600 text-white p-2 rounded">Send OTP</button>
+        <button 
+          id="forgot-send-otp"
+          type="submit"
+          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition-colors"
+        >
+          Send OTP
+        </button>
       </form>
     </div>
   );

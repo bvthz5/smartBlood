@@ -41,6 +41,8 @@ export default function Register() {
           <h2 className="text-lg font-semibold mb-3">Enter OTP</h2>
           <form onSubmit={confirmOtp}>
             <input 
+              id="donor-otp"
+              name="otp"
               className="" 
               placeholder="OTP" 
               value={otp} 
@@ -48,8 +50,16 @@ export default function Register() {
               autoComplete="one-time-code"
               type="text"
               inputMode="numeric"
+              maxLength="6"
             />
-            <button className="btn btn--primary" style={{marginTop:12}}>Verify</button>
+            <button 
+              id="donor-verify-otp"
+              type="submit"
+              className="btn btn--primary" 
+              style={{marginTop:12}}
+            >
+              Verify
+            </button>
           </form>
         </div>
       </div>
@@ -63,15 +73,20 @@ export default function Register() {
         <form onSubmit={submit}>
           <div className="form-row">
             <input 
+              id="donor-register-name"
+              name="name"
               className="" 
               placeholder="Name" 
               value={form.name} 
               onChange={e=>setForm({...form,name:e.target.value})}
               autoComplete="name"
+              type="text"
             />
           </div>
           <div className="form-row">
             <input 
+              id="donor-register-phone"
+              name="phone"
               className="" 
               placeholder="Phone" 
               value={form.phone} 
@@ -82,6 +97,8 @@ export default function Register() {
           </div>
           <div className="form-row">
             <input 
+              id="donor-register-email"
+              name="email"
               className="" 
               placeholder="Email" 
               value={form.email} 
@@ -92,14 +109,19 @@ export default function Register() {
           </div>
           <div className="form-row">
             <input 
+              id="donor-register-blood-group"
+              name="blood_group"
               className="" 
               placeholder="Blood group (e.g. B+)" 
               value={form.blood_group} 
               onChange={e=>setForm({...form,blood_group:e.target.value})}
+              type="text"
             />
           </div>
           <div className="form-row">
             <input 
+              id="donor-register-password"
+              name="password"
               type="password" 
               className="" 
               placeholder="Password" 
@@ -108,7 +130,13 @@ export default function Register() {
               autoComplete="new-password"
             />
           </div>
-          <button className="btn btn--primary">Register</button>
+          <button 
+            id="donor-register-submit"
+            type="submit"
+            className="btn btn--primary"
+          >
+            Register
+          </button>
         </form>
       </div>
     </div>

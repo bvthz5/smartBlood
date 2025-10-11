@@ -60,7 +60,9 @@ const AdminDashboard = () => {
                 icon: '📍',
                 type: 'coverage'
               }
-            ]
+            ],
+            // Include charts data from mockData for now
+            charts: mockData.charts
           });
         } else {
           // Fallback to mock data
@@ -175,29 +177,22 @@ const AdminDashboard = () => {
     }
   };
 
-  // Simulate data loading
-  useEffect(() => {
-    const loadDashboardData = async () => {
-      setLoading(true);
-      try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setDashboardData(mockData);
-      } catch (error) {
-        console.error('Failed to load dashboard data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadDashboardData();
-  }, []);
+  // Remove duplicate useEffect - data loading is handled above
 
   // Blood Group Distribution Chart Component
-  const BloodGroupChart = () => (
-    <div className="blood-group-chart">
-      <div className="chart-legend">
-        {dashboardData.charts.bloodGroups.map((group) => (
+  const BloodGroupChart = () => {
+    if (!dashboardData?.charts?.bloodGroups) {
+      return (
+        <div className="blood-group-chart">
+          <div className="chart-loading">Loading blood group data...</div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="blood-group-chart">
+        <div className="chart-legend">
+          {dashboardData.charts.bloodGroups.map((group) => (
           <div key={group.group} className="legend-item">
             <div 
               className="legend-color" 
@@ -233,24 +228,34 @@ const AdminDashboard = () => {
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   // Donation Trends Chart Component
-  const DonationTrendsChart = () => (
-    <div className="donation-trends-chart">
-      <div className="chart-stats">
-        <div className="stat-item">
-          <span className="stat-icon">📈</span>
-          <span className="stat-text">15% increase this month</span>
+  const DonationTrendsChart = () => {
+    if (!dashboardData?.charts?.donationTrends) {
+      return (
+        <div className="donation-trends-chart">
+          <div className="chart-loading">Loading donation trends...</div>
         </div>
-        <div className="stat-item">
-          <span className="stat-icon">🎯</span>
-          <span className="stat-text">89% target achievement</span>
+      );
+    }
+
+    return (
+      <div className="donation-trends-chart">
+        <div className="chart-stats">
+          <div className="stat-item">
+            <span className="stat-icon">📈</span>
+            <span className="stat-text">15% increase this month</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-icon">🎯</span>
+            <span className="stat-text">89% target achievement</span>
+          </div>
         </div>
-      </div>
-      <div className="line-chart">
-        <div className="chart-bars">
-          {dashboardData.charts.donationTrends.map((data) => (
+        <div className="line-chart">
+          <div className="chart-bars">
+            {dashboardData.charts.donationTrends.map((data) => (
             <div key={data.month} className="chart-bar">
               <div 
                 className="bar-fill"
@@ -269,18 +274,28 @@ const AdminDashboard = () => {
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   // Hospital Donations Chart Component
-  const HospitalDonationsChart = () => (
-    <div className="hospital-donations-chart">
-      <div className="chart-filters">
-        <button className="filter-button active">Monthly</button>
-        <button className="filter-button">Quarterly</button>
-        <button className="filter-button">Yearly</button>
-      </div>
-      <div className="bar-chart">
-        {dashboardData.charts.hospitalDonations.map((data) => (
+  const HospitalDonationsChart = () => {
+    if (!dashboardData?.charts?.hospitalDonations) {
+      return (
+        <div className="hospital-donations-chart">
+          <div className="chart-loading">Loading hospital data...</div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="hospital-donations-chart">
+        <div className="chart-filters">
+          <button className="filter-button active">Monthly</button>
+          <button className="filter-button">Quarterly</button>
+          <button className="filter-button">Yearly</button>
+        </div>
+        <div className="bar-chart">
+          {dashboardData.charts.hospitalDonations.map((data) => (
           <div key={data.hospital} className="hospital-bar">
             <div className="hospital-label">{data.hospital}</div>
             <div className="hospital-bar-container">
@@ -294,13 +309,23 @@ const AdminDashboard = () => {
         ))}
       </div>
     </div>
-  );
+    );
+  };
 
   // Request Analysis Chart Component
-  const RequestAnalysisChart = () => (
-    <div className="request-analysis-chart">
-      <div className="chart-summary">
-        {dashboardData.charts.requestAnalysis.map((data) => (
+  const RequestAnalysisChart = () => {
+    if (!dashboardData?.charts?.requestAnalysis) {
+      return (
+        <div className="request-analysis-chart">
+          <div className="chart-loading">Loading request analysis...</div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="request-analysis-chart">
+        <div className="chart-summary">
+          {dashboardData.charts.requestAnalysis.map((data) => (
           <div key={data.status} className="summary-item">
             <div 
               className="summary-color" 
@@ -327,7 +352,8 @@ const AdminDashboard = () => {
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   if (loading) {
     return (

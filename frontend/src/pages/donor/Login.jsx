@@ -26,16 +26,20 @@ export default function Login(){
       <form onSubmit={submit}>
         <div className="form-row">
           <input 
+            id="donor-login-ident"
+            name="email_or_phone"
             className="" 
             placeholder="Email or Phone" 
             value={ident} 
             onChange={e=>setIdent(e.target.value)}
             autoComplete="username"
-            type="email"
+            type="text"
           />
         </div>
         <div className="form-row">
           <input 
+            id="donor-login-password"
+            name="password"
             type="password" 
             className="" 
             placeholder="Password" 
@@ -47,7 +51,13 @@ export default function Login(){
         <div style={{display:'flex', justifyContent:'space-between', marginBottom:12}}>
           <a className="text-sm text-blue-600" href="/donor/forgot">Forgot?</a>
         </div>
-        <button className="btn btn--primary">Login</button>
+        <button 
+          id="donor-login-submit"
+          type="submit"
+          className="btn btn--primary"
+        >
+          Login
+        </button>
       </form>
     </div>
   );

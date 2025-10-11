@@ -23,7 +23,7 @@ def get_homepage_stats():
     Get homepage statistics including donors, units, hospitals, and districts
     """
     try:
-        # Get donor count (verified donors)
+        # Get donor count (active donors)
         donors_count = db.session.query(func.count(Donor.id)).join(
             User, Donor.user_id == User.id
         ).filter(
@@ -105,10 +105,10 @@ def get_homepage_alerts():
             alert = {
                 'id': request.id,
                 'type': 'alert',
-                'title': f'Urgent Need: {request.blood_type} in {request.location}',
-                'message': f'({request.quantity} units needed) - Click to Help',
-                'blood_type': request.blood_type,
-                'location': request.location,
+                'title': f'Urgent Need: {request.blood_group} in {request.hospital.location if request.hospital else "Unknown Location"}',
+                'message': f'({request.units_required} units needed) - Click to Help',
+                'blood_type': request.blood_group,
+                'location': request.hospital.location if request.hospital else "Unknown Location",
                 'quantity': request.units_required,
                 'created_at': request.created_at.isoformat(),
                 'priority': request.urgency,
@@ -129,7 +129,7 @@ def get_homepage_alerts():
                 'title': f'Blood Donation Camp at {camp.name}',
                 'message': f'{camp.next_camp_date.strftime("%B %d, %Y")} - {camp.location}',
                 'hospital_name': camp.name,
-                'location': camp.location,
+                'location': camp.location or camp.address,
                 'date': camp.next_camp_date.isoformat(),
                 'created_at': datetime.now().isoformat(),
                 'action_url': f'/camps/{camp.id}'
@@ -339,13 +339,13 @@ def get_dashboard_summary():
         month_ago = today - timedelta(days=30)
         
         # Basic counts
-        total_donors = db.session.query(func.count(Donor.id)).filter(
-            Donor.is_verified == True
+        total_donors = db.session.query(func.count(Donor.id)).join(
+            User, Donor.user_id == User.id
+        ).filter(
+            User.status == "active"
         ).scalar() or 0
         
-        total_units = db.session.query(func.sum(DonationHistory.quantity)).filter(
-            DonationHistory.status == 'completed'
-        ).scalar() or 0
+        total_units = db.session.query(func.sum(DonationHistory.units)).scalar() or 0
         
         total_hospitals = db.session.query(func.count(Hospital.id)).filter(
             Hospital.is_active == True
@@ -362,14 +362,14 @@ def get_dashboard_summary():
         
         # Blood type distribution
         blood_type_dist = db.session.query(
-            Donor.blood_type,
+            Donor.blood_group,
             func.count(Donor.id)
         ).join(
             User, Donor.user_id == User.id
         ).filter(
             User.status == "active",
-            Donor.blood_type.isnot(None)
-        ).group_by(Donor.blood_type).all()
+            Donor.blood_group.isnot(None)
+        ).group_by(Donor.blood_group).all()
         
         blood_distribution = {bt: count for bt, count in blood_type_dist}
         

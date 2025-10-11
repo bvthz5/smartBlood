@@ -3,8 +3,46 @@ from app.extensions import db
 from app.models import User, Donor, Match, DonationHistory
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
+from app.utils.id_encoder import encode_id, decode_id, IDEncodingError
 
 donor_bp = Blueprint("donor", __name__, url_prefix="/api/donors")
+
+
+@donor_bp.route("/profile/<encoded_id>", methods=["GET"])
+@jwt_required()
+def get_profile_by_id(encoded_id):
+    """Get donor profile by encoded ID."""
+    try:
+        # Decode the ID
+        donor_id = decode_id(encoded_id)
+        
+        # Find the donor
+        donor = Donor.query.get(donor_id)
+        if not donor:
+            return jsonify({"error": "Donor not found"}), 404
+            
+        # Get user info
+        user = User.query.get(donor.user_id)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+            
+        return jsonify({
+            "id": encode_id(user.id),
+            "donor_id": encode_id(donor.id),
+            "name": f"{user.first_name} {user.last_name or ''}".strip(),
+            "email": user.email,
+            "phone": user.phone,
+            "blood_group": donor.blood_group,
+            "availability_status": "available" if donor.is_available else "unavailable",
+            "last_donation_date": donor.last_donation_date.isoformat() if donor.last_donation_date else None,
+            "reliability_score": donor.reliability_score
+        })
+        
+    except IDEncodingError as e:
+        return jsonify({"error": f"Invalid ID format: {str(e)}"}), 400
+    except Exception as e:
+        current_app.logger.exception("Error fetching donor profile")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @donor_bp.route("/me", methods=["GET"])
@@ -14,12 +52,13 @@ def get_me():
     user = User.query.get(uid)
     donor = Donor.query.filter_by(user_id=uid).first()
     return jsonify({
-        "id": user.id,
+        "id": encode_id(user.id) if user else None,
+        "donor_id": encode_id(donor.id) if donor else None,
         "name": f"{user.first_name} {user.last_name or ''}".strip(),
         "email": user.email,
         "phone": user.phone,
         "blood_group": donor.blood_group if donor else None,
-        "availability_status": donor.availability if donor else None,
+        "availability_status": "available" if donor and donor.is_available else "unavailable",
         "last_donation_date": donor.last_donation_date.isoformat() if donor and donor.last_donation_date else None
     })
 
@@ -44,9 +83,9 @@ def set_availability():
     data = request.get_json() or {}
     status = data.get("status")
     donor = Donor.query.filter_by(user_id=uid).first()
-    donor.availability = status.lower() == "available"
+    donor.is_available = status.lower() == "available"
     db.session.commit()
-    return jsonify({"status": "available" if donor.availability else "unavailable"})
+    return jsonify({"status": "available" if donor.is_available else "unavailable"})
 
 @donor_bp.route("/dashboard", methods=["GET"])
 @jwt_required()
@@ -55,7 +94,7 @@ def dashboard():
     donor = Donor.query.filter_by(user_id=uid).first()
     active_matches = Match.query.filter_by(donor_id=donor.id, status="notified").count()
     return jsonify({
-        "availability_status": "available" if donor.availability else "unavailable",
+        "availability_status": "available" if donor.is_available else "unavailable",
         "reliability_score": donor.reliability_score,
         "last_donation_date": donor.last_donation_date.isoformat() if donor.last_donation_date else None,
         "active_matches_count": active_matches

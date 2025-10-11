@@ -186,6 +186,13 @@ export default function Nav() {
                 >
                   {language === 'en' ? 'Seeker Login' : 'അന്വേഷകൻ ലോഗിൻ'}
                 </NavLink>
+                <NavLink 
+                  to="/admin/login" 
+                  className="header__dropdown-item"
+                  onClick={() => setLoginDropdownOpen(false)}
+                >
+                  {language === 'en' ? 'Admin Login' : 'അഡ്മിൻ ലോഗിൻ'}
+                </NavLink>
               </div>
             </div>
 
@@ -317,6 +324,13 @@ export default function Nav() {
                 onClick={() => setLoginDropdownOpen(false)}
               >
                 {language === 'en' ? 'Seeker Login' : 'അന്വേഷകൻ ലോഗിൻ'}
+              </NavLink>
+              <NavLink 
+                to="/admin/login" 
+                className="header__dropdown-item"
+                onClick={() => setLoginDropdownOpen(false)}
+              >
+                {language === 'en' ? 'Admin Login' : 'അഡ്മിൻ ലോഗിൻ'}
               </NavLink>
             </div>
           </div>

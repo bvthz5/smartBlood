@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { getDonorProfile, setAvailability, getDonorMatches, respondToMatch } from "../../services/api";
+import { encodeId } from "../../services/donorService";
 
 export default function DonorDashboard(){
   const [profile, setProfile] = useState(null);
@@ -41,9 +43,19 @@ export default function DonorDashboard(){
         <p>Phone: {profile.phone}</p>
         <p>Blood: {profile.blood_group}</p>
         <p>Availability: {profile.availability_status}</p>
-        <div className="mt-3">
-          <button onClick={()=>toggle("available")} className="mr-2 px-3 py-1 bg-green-600 text-white rounded">Set Available</button>
-          <button onClick={()=>toggle("unavailable")} className="px-3 py-1 bg-gray-300 rounded">Set Unavailable</button>
+        <div className="mt-3 space-y-2">
+          <div>
+            <Link 
+              to={`/donor/edit-profile/${encodeId(profile.donor_id || profile.id)}`}
+              className="block w-full text-center px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+            >
+              Edit Profile
+            </Link>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={()=>toggle("available")} className="flex-1 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors">Set Available</button>
+            <button onClick={()=>toggle("unavailable")} className="flex-1 px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 transition-colors">Set Unavailable</button>
+          </div>
         </div>
       </div>
 

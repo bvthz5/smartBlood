@@ -71,6 +71,11 @@ function App() {
               <DonorEditProfile />
             </ProtectedRoute>
           } />
+          <Route path="/donor/edit-profile/:encodedId" element={
+            <ProtectedRoute>
+              <DonorEditProfile />
+            </ProtectedRoute>
+          } />
           
           {/* Seeker Routes */}
           <Route path="/seeker/request" element={<SeekerRequest />} />

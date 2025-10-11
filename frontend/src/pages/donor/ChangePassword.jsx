@@ -21,6 +21,8 @@ export default function ChangePassword(){
       <h2 className="text-lg font-semibold mb-3">Change Password</h2>
       <form onSubmit={submit}>
         <input 
+          id="change-old-password"
+          name="old_password"
           className="w-full border p-2 rounded mb-2" 
           placeholder="Old password" 
           type="password" 
@@ -29,6 +31,8 @@ export default function ChangePassword(){
           autoComplete="current-password"
         />
         <input 
+          id="change-new-password"
+          name="new_password"
           className="w-full border p-2 rounded mb-2" 
           placeholder="New password" 
           type="password" 
@@ -36,7 +40,13 @@ export default function ChangePassword(){
           onChange={e=>setNew(e.target.value)}
           autoComplete="new-password"
         />
-        <button className="w-full bg-blue-600 text-white p-2 rounded">Change</button>
+        <button 
+          id="change-password-submit"
+          type="submit"
+          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition-colors"
+        >
+          Change
+        </button>
       </form>
     </div>
   );
