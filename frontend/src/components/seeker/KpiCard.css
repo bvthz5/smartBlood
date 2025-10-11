@@ -1,0 +1,10 @@
+@import '../../styles/seeker-theme.css';
+.kpi-card{background:#fff;border:1px solid #eef0f3;border-radius:16px;box-shadow:var(--shadow-subtle);padding:16px;display:flex;flex-direction:column;gap:6px;opacity:0;transform:translateY(6px);animation:kpiIn .4s forwards}
+.kpi-card.primary{border-top:4px solid var(--color-primary)}
+.kpi-card.accent{border-top:4px solid var(--color-accent)}
+.kpi-card.default{border-top:4px solid #e5e7eb}
+.kpi-top{display:flex;justify-content:space-between;align-items:center}
+.kpi-title{font-size:12px;color:#64748b}
+.kpi-value{font-size:28px;font-weight:700;color:var(--color-text-dark)}
+.kpi-underline{height:6px;border-radius:6px;background:linear-gradient(90deg,#f3f4f6,#e5e7eb)}
+@keyframes kpiIn{to{opacity:1;transform:translateY(0)}}

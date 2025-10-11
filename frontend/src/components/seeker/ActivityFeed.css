@@ -1,0 +1,12 @@
+@import '../../styles/seeker-theme.css';
+.feed{padding:0}
+.feed-header{padding:12px 16px;border-bottom:1px solid #f1f5f9;font-weight:600}
+.feed-list{max-height:320px;overflow:auto}
+.feed-empty{padding:16px;color:#64748b}
+.feed-item{display:flex;gap:10px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid #f8fafc}
+.dot{width:10px;height:10px;border-radius:50%;margin-top:6px}
+.dot.info{background:var(--color-accent)}
+.dot.success{background:#10b981}
+.dot.warning{background:#f59e0b}
+.feed-title{font-size:13px;color:var(--color-text-dark)}
+.feed-meta{font-size:12px;color:#94a3b8}

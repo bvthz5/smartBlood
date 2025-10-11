@@ -1,0 +1,11 @@
+@import '../../styles/seeker-theme.css';
+.page-wrap{padding:16px}
+.form-card{padding:16px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:10px}
+.grid label{display:grid;gap:6px}
+.grid input,.grid select{height:42px;border:1px solid #e5e7eb;border-radius:10px;padding:0 12px}
+.hint{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:12px}
+.actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:10px}
+.btn{height:40px;padding:0 16px;border-radius:10px;border:1px solid #e5e7eb;background:#fff}
+.btn-primary{background:var(--color-primary);color:#fff;border:none}
+@media (max-width:768px){.grid{grid-template-columns:1fr}}

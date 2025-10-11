@@ -1,0 +1,17 @@
+@import '../../styles/seeker-theme.css';
+.page-wrap{padding:16px}
+.toolbar{display:flex;gap:10px;align-items:center;padding:10px}
+.toolbar input,.toolbar select{height:36px;border:1px solid #e5e7eb;border-radius:10px;padding:0 10px}
+.table-card{margin-top:12px;overflow:auto}
+.table-card table{width:100%;border-collapse:separate;border-spacing:0}
+.table-card th,.table-card td{padding:10px 12px;text-align:left;font-size:12px;border-bottom:1px solid #f3f4f6;white-space:nowrap}
+.table-card thead th{position:sticky;top:0;background:#fafafa;z-index:1}
+.pager{display:flex;gap:8px;justify-content:flex-end;padding:10px}
+.pill{border-radius:999px;padding:2px 8px}
+.pill.emergency{background:#fee2e2;color:#b91c1c}
+.pill.urgent{background:#fef3c7;color:#b45309}
+.pill.normal{background:#e5f3ff;color:#1e40af}
+.pill.status.active{background:#e0f2fe;color:#0369a1}
+.pill.status.matched{background:#dcfce7;color:#15803d}
+.pill.status.completed{background:#ede9fe;color:#6d28d9}
+.pill.status.cancelled{background:#fee2e2;color:#b91c1c}

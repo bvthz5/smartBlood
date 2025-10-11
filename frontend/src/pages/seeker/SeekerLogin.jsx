@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginSeeker } from "../../services/api";
+import seekerService from "../../services/seekerService";
 import Nav from "../../components/Nav";
 import "./SeekerLogin.css";
 
@@ -30,11 +30,19 @@ export default function SeekerLogin() {
     setError("");
 
     try {
-      const response = await loginSeeker(formData);
-      localStorage.setItem("seeker_access_token", response.data.access_token);
-      localStorage.setItem("seeker_refresh_token", response.data.refresh_token);
-      localStorage.setItem("user_type", "seeker");
-      navigate("/seeker/dashboard");
+      const data = await seekerService.login(formData.email_or_phone, formData.password);
+      if (data?.force_change) {
+        // store temp token and go to activation
+        if (data.temp_token) localStorage.setItem('seeker_temp_token', data.temp_token);
+        localStorage.setItem('user_type', 'seeker');
+        navigate('/seeker/activate-account');
+      } else {
+        // full access
+        if (data.access_token) localStorage.setItem('seeker_token', data.access_token);
+        if (data.refresh_token) localStorage.setItem('seeker_refresh_token', data.refresh_token);
+        localStorage.setItem('user_type', 'seeker');
+        navigate('/seeker/dashboard');
+      }
     } catch (err) {
       setError(err?.response?.data?.error || "Login failed. Please check your credentials.");
     } finally {

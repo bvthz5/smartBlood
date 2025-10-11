@@ -18,6 +18,15 @@ import NotFound from './pages/NotFound';
 import SeekerRequest from './pages/seeker/SeekerRequest';
 import SeekerLogin from './pages/seeker/SeekerLogin';
 import SeekerDashboard from './pages/seeker/SeekerDashboard';
+import ForceChangePassword from './pages/seeker/ForceChangePassword';
+import CreateRequest from './pages/seeker/CreateRequest';
+import ViewRequests from './pages/seeker/ViewRequests';
+import MatchedDonors from './pages/seeker/MatchedDonors';
+import SeekerAnalytics from './pages/seeker/Analytics';
+import SeekerSettings from './pages/seeker/Settings';
+import SeekerHospitalProfile from './pages/seeker/HospitalProfile';
+import SeekerRouteGuard from './components/seeker/SeekerRouteGuard';
+import SeekerTempGuard from './components/seeker/SeekerTempGuard';
 
 // Admin Pages
 import AdminLogin from './pages/admin/AdminLogin';
@@ -52,8 +61,47 @@ function App() {
           
           {/* Seeker Routes */}
           <Route path="/seeker/login" element={<SeekerLogin />} />
-          <Route path="/seeker/dashboard" element={<SeekerDashboard />} />
+          <Route path="/seeker/activate-account" element={
+            <SeekerTempGuard>
+              <ForceChangePassword />
+            </SeekerTempGuard>
+          } />
+          <Route path="/seeker/dashboard" element={
+            <SeekerRouteGuard>
+              <SeekerDashboard />
+            </SeekerRouteGuard>
+          } />
           <Route path="/seeker/request" element={<SeekerRequest />} />
+          <Route path="/seeker/requests/create" element={
+            <SeekerRouteGuard>
+              <CreateRequest />
+            </SeekerRouteGuard>
+          } />
+          <Route path="/seeker/requests" element={
+            <SeekerRouteGuard>
+              <ViewRequests />
+            </SeekerRouteGuard>
+          } />
+          <Route path="/seeker/matches" element={
+            <SeekerRouteGuard>
+              <MatchedDonors />
+            </SeekerRouteGuard>
+          } />
+          <Route path="/seeker/hospital" element={
+            <SeekerRouteGuard>
+              <SeekerHospitalProfile />
+            </SeekerRouteGuard>
+          } />
+          <Route path="/seeker/analytics" element={
+            <SeekerRouteGuard>
+              <SeekerAnalytics />
+            </SeekerRouteGuard>
+          } />
+          <Route path="/seeker/settings" element={
+            <SeekerRouteGuard>
+              <SeekerSettings />
+            </SeekerRouteGuard>
+          } />
           
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />

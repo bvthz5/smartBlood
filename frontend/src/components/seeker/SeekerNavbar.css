@@ -1,0 +1,12 @@
+@import '../../styles/seeker-theme.css';
+.seekernav{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:var(--color-bg-card);box-shadow:var(--shadow-subtle)}
+.brand{font-weight:700;color:var(--color-text-dark)}
+.brand span{font-weight:500;opacity:.85}
+.seekernav-right{display:flex;align-items:center;gap:12px;position:relative}
+.icon-btn{position:relative;background:#fff;border:1px solid #e5e7eb;border-radius:10px;height:36px;padding:0 10px}
+.badge{position:absolute;top:-6px;right:-6px;background:var(--color-primary);color:#fff;border-radius:999px;font-size:10px;padding:2px 6px}
+.avatar{height:36px;width:36px;border-radius:50%;border:1px solid #e5e7eb;background:#fff}
+.menu{position:absolute;right:0;top:48px;background:#fff;border:1px solid #eef0f3;border-radius:12px;box-shadow:var(--shadow-subtle);display:flex;flex-direction:column;min-width:180px;overflow:hidden}
+.menu button{background:#fff;border:none;text-align:left;padding:10px 12px}
+.menu .divider{height:1px;background:#f1f5f9}
+.menu .danger{color:var(--color-primary)}
